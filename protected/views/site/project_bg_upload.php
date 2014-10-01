@@ -70,7 +70,7 @@
 
     });
     function loadprojectimages() {
-        $.post('<?php echo Yii::app()->request->baseUrl; ?>' + '/site/loadbgimages', {
+        $.post('<?php echo $this->createUrl("/site/loadbgimages"); ?>', {
             newimage: newimage,
             ukey: ukey,
             imgpos: imgpos
@@ -90,7 +90,7 @@
     }
     function deleteimages() {
         $("#saveit").removeAttr('disabled', true);
-        $.post('<?php echo Yii::app()->request->baseUrl; ?>' + '/site/deletebgimage', {
+        $.post('<?php echo $this->createUrl('/site/deletebgimage'); ?>' , {
             imgkey: imgkey,
             ukey: ukey
         }, function(data) {
@@ -110,7 +110,7 @@
     function make_background() {
 
         $("#saveit").removeAttr('disabled', 'disabled');
-        $.post('<?php echo Yii::app()->request->baseUrl; ?>' + '/site/makebackground', {
+        $.post('<?php echo $this->createUrl('/site/makebackground'); ?>', {
             imgkey: imgkey,
             ukey: ukey
         }, function(data) {
@@ -353,7 +353,7 @@
 <script>
     var ukey = '<?php echo $_GET["ukey"]; ?>';
     $("#saveit").live("click", function() {
-        window.location.href = '<?php echo BASE_URL; ?>/' + "site/upload/?ukey=" + ukey
+        window.location.href = '<?php echo $this->createUrl("/site/upload/"); ?>/' + "?ukey=" + ukey
     });
     var tempImagePath = '<?php echo Yii::app()->request->baseUrl; ?>/collage/';
 

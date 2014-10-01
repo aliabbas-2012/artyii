@@ -52,7 +52,7 @@ return array(
         ),
         'urlManager' => array(
             'urlFormat' => 'path',
-            'showScriptName' => false,
+            'showScriptName' => true,
             'caseSensitive' => false,
             'class' => 'MyUrlManager'
         ),

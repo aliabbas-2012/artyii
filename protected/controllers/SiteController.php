@@ -51,6 +51,7 @@ class SiteController extends AppController {
     }
 
     public function actionBgupload() {
+        
         if (!empty($_GET['ukey'])) {
             $_ukey = $_GET['ukey'];
             $_owner_id = Yii::app()->user->getId();
@@ -70,6 +71,7 @@ class SiteController extends AppController {
     }
     
     public function actionUpload() {
+        
         if (!empty($_GET['ukey'])) {
             $_ukey = $_GET['ukey'];
             $_owner_id = Yii::app()->user->getId();

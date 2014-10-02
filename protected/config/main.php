@@ -34,15 +34,28 @@ return array(
             'loginUrl' => array('home/'),
         //'allowAutoLogin'=>true,
         ),
+//        'db' => array(
+//            //local
+//            'connectionString' => 'mysql:host=localhost;dbname=artshire_yii',
+//           
+//            'emulatePrepare' => true,
+//        
+//            'username' => 'artshire_yii',
+//           
+//            'password' => 'yii@123',
+//         
+//            'charset' => 'utf8',
+//            'tablePrefix' => '',
+//        ),
         'db' => array(
             //local
-            'connectionString' => 'mysql:host=localhost;dbname=artshire_yii',
+            'connectionString' => 'mysql:host=localhost;dbname=sfakhar1_artyii',
            
             'emulatePrepare' => true,
         
-            'username' => 'artshire_yii',
+            'username' => 'sfakhar1_yii',
            
-            'password' => 'yii@123',
+            'password' => 'abc123AB',
          
             'charset' => 'utf8',
             'tablePrefix' => '',

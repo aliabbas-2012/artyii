@@ -247,7 +247,7 @@ class SiteController extends AppController {
                 $_project_bg_model_imges = $bgImages[0];
                 $pages = $bgImages[1];
                 $count = $bgImages[2];
-
+               
                 $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_partial_img_view'], array(
                     'models' => $_project_model_imges,
                     'modelsbg' => $_project_bg_model_imges,
@@ -949,6 +949,7 @@ class SiteController extends AppController {
                 $command = Yii::app()->db->createCommand("SELECT * From tbl_images where id=$_image_id and bg_img = 1");
                 $result_bg = $command->queryRow();
                 //print_r($result_bg);exit();
+              
                 $this->render(Yii::app()->params['AppViews']['si_project_collage'], array(
                     'model' => $model,
                     'imgmodel' => $_project_img_models,

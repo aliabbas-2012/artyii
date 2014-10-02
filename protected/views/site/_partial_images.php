@@ -36,15 +36,17 @@
 
                 </div>
             </div>
-            <?php if (isset($models) && !empty($models) && count($models) > 0) { ?>
+            <?php
+            if (isset($models) && !empty($models) && count($models) > 0) {
+                ?>
 
                 <div>
                     <?php
                     for ($i = count($models) - 1; $i >= 0; $i--) {
 
-                        $thumb_image = $modelsbg[$i]->cropped_img;
-                        if (!empty($modelsbg[$i]->thumb_image)) {
-                            $thumb_image = "thumbs/" . $modelsbg[$i]->thumb_image;
+                        $thumb_image = $models[$i]->cropped_img;
+                        if (!empty($models[$i]->thumb_image)) {
+                            $thumb_image = "thumbs/" . $models[$i]->thumb_image;
                         }
                         ?>
                         <div style="padding:15px;width:24%;float:left;">
@@ -64,6 +66,7 @@
             <div style="margin-top:20px;">
 
                 <?php
+                
                 $this->widget('CLinkPager', array(
                     'pages' => $pages,
                 ))

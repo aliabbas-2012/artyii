@@ -198,9 +198,12 @@ class SiteController extends AppController {
             $result = $command->queryRow();
             $_upload_message = "";
             $_done = false;
+
             if (isset($result['ukey'])) {
                 $_project_id = $result['id'];
+
                 if (!empty($_file_name)) {
+
                     $savepath = Yii::getPathOfAlias('webroot') . '/collage/';
                     $new_filename = Helpers::getFilenameAsUnique($savepath, $_file_name);
                     $savepath = Yii::getPathOfAlias('webroot') . '/collage/' . $_file_name;
@@ -234,25 +237,16 @@ class SiteController extends AppController {
                     $model_img->save();
                 }
                 $_retArray = '';
-                $criteria = new CDbCriteria();
-                $criteria->order = 'id DESC';
-                $criteria->addCondition("project_id=$_project_id and bg_img=0");
-                $count = Images::model()->count($criteria);
-                $pages = new CPagination($count);
-                $pages->pageSize = VIEW_PER_PAGE;
-                $pages->applyLimit($criteria);
-                $_project_model_imges = Images::model()->findAll($criteria);
 
+                $modelImages = Images::model()->getProjectModelImages($_project_id);
+                $_project_model_imges = $modelImages[0];
+                $pages = $modelImages[1];
+                $count = $modelImages[2];
 
-                $criteria = new CDbCriteria();
-                $criteria->order = 'id DESC';
-                $criteria->addCondition("(project_id=$_project_id and bg_img=1 and img_serial=5) OR (project_key='XXX' and bg_img=1)");
-                $count = Images::model()->count($criteria);
-                $pages = new CPagination($count);
-                $pages->pageSize = VIEW_PER_PAGE;
-                $pages->applyLimit($criteria);
-                $_project_bg_model_imges = Images::model()->findAll($criteria);
-
+                $bgImages = Images::model()->getProjectBgModelImages($_project_id);
+                $_project_bg_model_imges = $bgImages[0];
+                $pages = $bgImages[1];
+                $count = $bgImages[2];
 
                 $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_partial_img_view'], array(
                     'models' => $_project_model_imges,
@@ -331,24 +325,17 @@ class SiteController extends AppController {
                 }
 
                 $_retArray = '';
-                $criteria = new CDbCriteria();
-                $criteria->order = 'id DESC';
-                $criteria->addCondition("project_id=$_project_id and bg_img=0");
-                $count = Images::model()->count($criteria);
-                $pages = new CPagination($count);
-                $pages->pageSize = VIEW_PER_PAGE;
-                $pages->applyLimit($criteria);
-                $_project_model_imges = Images::model()->findAll($criteria);
 
+                $productImages = Images::model()->getProjectModelImages($_project_id);
+                $_project_model_imges = $productImages[0];
+                $pages = $productImages[1];
+                $count = $productImages[2];
 
-                $criteria = new CDbCriteria();
-                $criteria->order = 'id DESC';
-                $criteria->addCondition("(project_id=$_project_id and bg_img=1 and img_serial=5) OR (project_key='XXX' and bg_img=1)");
-                $count = Images::model()->count($criteria);
-                $pages = new CPagination($count);
-                $pages->pageSize = VIEW_PER_PAGE;
-                $pages->applyLimit($criteria);
-                $_project_bg_model_imges = Images::model()->findAll($criteria);
+                $bgImages = Images::model()->getProjectBgModelImages($_project_id);
+                $_project_bg_model_imges = $bgImages[0];
+                $pages = $bgImages[1];
+                $count = $bgImages[2];
+
 
 
                 $command = Yii::app()->db->createCommand("SELECT * From tbl_projects where owner_id = '$_owner_id' and mode = 0 and ukey='$_ukey'");
@@ -847,16 +834,13 @@ class SiteController extends AppController {
                 }
 
 
-                $criteria = new CDbCriteria();
-                $criteria->order = 'id DESC';
-                $criteria->addCondition("project_id=$_project_id");
-                $count = Images::model()->count($criteria);
-                $pages = new CPagination($count);
-                $pages->pageSize = VIEW_PER_PAGE;
-                $pages->applyLimit($criteria);
-                $_project_model_imges = Images::model()->findAll($criteria);
+                $bgImages = Images::model()->getProjectBgModelImages($_project_id);
+                $_project_bg_model_imges = $bgImages[0];
+                $pages = $bgImages[1];
+                $count = $bgImages[2];
+                
                 $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_partial_bg_img_view'], array(
-                    'models' => $_project_model_imges,
+                    'modelsbg' => $_project_bg_model_imges,
                     'pages' => $pages,
                     'total' => $count
                         ), true);
@@ -914,7 +898,12 @@ class SiteController extends AppController {
                 $pages = new CPagination($count);
                 $pages->pageSize = VIEW_PER_PAGE;
                 $pages->applyLimit($criteria);
-                $_project_model_imges = Images::model()->findAll($criteria);
+
+                $product_images = Images::model()->getProjectModelImages($_project_id);
+                $_project_model_imges = $product_images[0];
+                $pages = $product_images[1];
+                $count = $product_images[2];
+
                 $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_partial_img_view'], array(
                     'models' => $_project_model_imges,
                     'pages' => $pages,
@@ -1399,6 +1388,7 @@ class SiteController extends AppController {
     }
 
     public function actionError() {
+
         $message = 'Something is wrong. Please try again!';
         //$this->layout = 'sitewheader';
         $this->layout = 'resadmin';

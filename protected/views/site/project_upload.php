@@ -168,7 +168,7 @@
             newimage = '';
          }, "json");
     }
-    function deleteimages() {
+    function deleteimages(object) {
         $("#saveit").removeAttr('disabled', true);
         $.post('<?php echo Yii::app()->request->baseUrl; ?>' + '/site/deleteimage', {
             imgkey: imgkey,
@@ -184,6 +184,7 @@
                 background_upload = 1;
             }
             $("#saveit").removeAttr('disabled', true);
+           
             newimage = '';
         }, "json");
     }
@@ -265,7 +266,7 @@
         if (r == true)
         {
 
-            deleteimages();
+            deleteimages(this);
 
         }
         else

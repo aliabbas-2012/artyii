@@ -90,7 +90,7 @@
     }
     function deleteimages() {
         $("#saveit").removeAttr('disabled', true);
-        $.post('<?php echo $this->createUrl('/site/deletebgimage'); ?>' , {
+        $.post('<?php echo $this->createUrl('/site/deletebgimage'); ?>', {
             imgkey: imgkey,
             ukey: ukey
         }, function(data) {
@@ -179,7 +179,7 @@
     });
 
     $('.delete_img').live("click", function(e) {
-
+        
         imgkey = $(this).attr('imgkey');
         var r = confirm("WARNING: Image will be deleted. Are you sure you want to delete this image?");
         if (r == true)
@@ -364,34 +364,34 @@
         <div id="pageTitle" style="text-align: center;">
             <h2 class="thick-title page-title-bar">Project - <?php echo $model->name; ?></h2>
         </div><br><br>
-<div class="col-lg-12 col-md-12 col-sm-12 imgchanel">
-    <div style="text-align:center;"><span class="step"><b style="font-size:30px;">Step 2</b></span> <span class="headingname">Select Background Images</span></div>
-    <br>
-    <div class="wrapper-box">
-        <div class="wrapper-content">
-            <div class="row imgblock" style="margin: 20px;" >
-
-            </div>
-            <div class="headingnameor">Or Upload Your Own</div>
-            <div style="width:100%;">
-                <div class="form-group" style="text-align: center;" >
-                    <div id="uploadBackground" class="unstyled" style="padding: 20px;margin-left: 38%;">
+        <div class="col-lg-12 col-md-12 col-sm-12 imgchanel">
+            <div style="text-align:center;"><span class="step"><b style="font-size:30px;">Step 2</b></span> <span class="headingname">Select Background Images</span></div>
+            <br>
+            <div class="wrapper-box">
+                <div class="wrapper-content">
+                    <div class="row imgblock" style="margin: 20px;" >
 
                     </div>
-                </div>
-                
-            </div>
+                    <div class="headingnameor">Or Upload Your Own</div>
+                    <div style="width:100%;">
+                        <div class="form-group" style="text-align: center;" >
+                            <div id="uploadBackground" class="unstyled" style="padding: 20px;margin-left: 38%;">
 
-            <div style="clear: both;"></div>
-            <div class="row" style="height: 20px;" >
+                            </div>
+                        </div>
 
+                    </div>
+
+                    <div style="clear: both;"></div>
+                    <div class="row" style="height: 20px;" >
+
+                    </div>
+                </div></div>
+            <div style="padding:20px;text-align: center;">
+                <button style="cursor:pointer;" class="btn btn-success" id="saveit" type="button">Next</button>
             </div>
-        </div></div>
-    <div style="padding:20px;text-align: center;">
-        <button style="cursor:pointer;" class="btn btn-success" id="saveit" type="button">Next</button>
+        </div>
     </div>
-</div>
- </div>
 </div>
 <div style='display:none'>
     <div id='inline_content' style='padding:10px; background:#fff;'>

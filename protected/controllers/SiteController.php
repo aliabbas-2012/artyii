@@ -7,16 +7,19 @@
 class SiteController extends AppController {
 
     public $layout = 'resadmin';
+
     //public $layout = 'sitewheader';
     public function actionIndex() {
-        
+
         //$this->render(Yii::app()->params['AppViews']['si_index']);
         $this->redirect(array('site/signin'));
     }
 
     public function actionDashboard() {
         $_user_id = Yii::app()->user->getId();
-        if($_user_id<=0){$this->redirect(array('site/signin'));}
+        if ($_user_id <= 0) {
+            $this->redirect(array('site/signin'));
+        }
         $criteria = new CDbCriteria();
         $criteria->order = 'id DESC';
         $criteria->addCondition("owner_id=$_user_id");
@@ -34,7 +37,9 @@ class SiteController extends AppController {
 
     public function actionCreate() {
         $_user_id = Yii::app()->user->getId();
-        if($_user_id<=0){$this->redirect(array('site/signin'));}
+        if ($_user_id <= 0) {
+            $this->redirect(array('site/signin'));
+        }
         $model = New Project;
         if (isset($_POST['Project'])) {
             $model->attributes = $_POST['Project'];
@@ -42,8 +47,8 @@ class SiteController extends AppController {
             $model->mode = 0;
             $model->owner_id = Yii::app()->user->getId();
             $model->created_at = date(DB_INSERT_TIME_FORMAT, time());
-            if($model->save())
-            $this->redirect(array(Yii::app()->params['AppUrls']['si_upload_project_bg_img'] . "/?ukey=" . $model->ukey));
+            if ($model->save())
+                $this->redirect(array(Yii::app()->params['AppUrls']['si_upload_project_bg_img'] . "/?ukey=" . $model->ukey));
         }
         $this->render(Yii::app()->params['AppViews']['si_project_create'], array(
             'model' => $model
@@ -51,7 +56,7 @@ class SiteController extends AppController {
     }
 
     public function actionBgupload() {
-        
+
         if (!empty($_GET['ukey'])) {
             $_ukey = $_GET['ukey'];
             $_owner_id = Yii::app()->user->getId();
@@ -69,9 +74,9 @@ class SiteController extends AppController {
         $this->redirect(array(Yii::app()->params['AppUrls']['si_dashboard']));
         exit();
     }
-    
+
     public function actionUpload() {
-        
+
         if (!empty($_GET['ukey'])) {
             $_ukey = $_GET['ukey'];
             $_owner_id = Yii::app()->user->getId();
@@ -90,49 +95,56 @@ class SiteController extends AppController {
         exit();
     }
 
-     public function actionLoadbgimages() {
+    public function actionLoadbgimages() {
         if (!empty($_POST['ukey'])) {
-            
+
             $_ukey = $_POST['ukey'];
             $_file_name = $_POST['newimage'];
             $_imgpos = $_POST['imgpos'];
-            
+
             $_owner_id = Yii::app()->user->getId();
             $command = Yii::app()->db->createCommand("SELECT * From tbl_projects where owner_id = '$_owner_id' and mode = 0 and ukey='$_ukey'");
             $result = $command->queryRow();
             $_upload_message = "";
-            $_done=false;
+            $_done = false;
             if (isset($result['ukey'])) {
                 $_project_id = $result['id'];
                 if (!empty($_file_name)) {
                     $savepath = Yii::getPathOfAlias('webroot') . '/collage/';
                     $new_filename = Helpers::getFilenameAsUnique($savepath, $_file_name);
                     $savepath = Yii::getPathOfAlias('webroot') . '/collage/' . $_file_name;
+                    $thumb_name = Helpers::getFilenameAsUniqueThumb($savepath, $_file_name);
+
                     $newsavepath = Yii::getPathOfAlias('webroot') . '/collage/';
                     Helpers::fileRename($savepath, $new_filename, $newsavepath);
                     $logo_thumbnail = $new_filename;
-                    
+
+
                     $commandyes = Yii::app()->db->createCommand("SELECT * From tbl_images where project_key = '$_ukey' and img_serial = $_imgpos");
                     $back_img = $commandyes->queryRow();
-                   
-                    if(isset($back_img['img_serial'])){
+
+                    if (isset($back_img['img_serial'])) {
                         $model_img = Images::model()->findByPk($back_img['id']);
-                    }else{
+                    } else {
                         $model_img = new Images();
                         $model_img->img_key = Helpers::getUnqiueKey();
                         $model_img->project_id = $_project_id;
                         $model_img->project_key = $_ukey;
                         $model_img->created_at = date(DB_INSERT_TIME_FORMAT, time());
                     }
-                    $_done =true;
+                    $_done = true;
                     $model_img->img_serial = $_imgpos;
                     $model_img->main_img = $_file_name;
                     $model_img->cropped_img = $new_filename;
-                    if($_imgpos==5){
-                       $model_img->bg_img = 1; 
+                    $model_img->thumb_image = $thumb_name;
+                    if ($_imgpos == 5) {
+                        $model_img->bg_img = 1;
                     }
+                    //generate thumb here
+
+                    $pathToThumbs = DTUploadedFile::creeatRecurSiveDirectories(array("thumbs"));
+                    DTUploadedFile::createThumbs($savepath, $pathToThumbs, 180, $thumb_name);
                     $model_img->save();
-                    
                 }
                 $_retArray = '';
                 $criteria = new CDbCriteria();
@@ -143,8 +155,8 @@ class SiteController extends AppController {
                 $pages->pageSize = VIEW_PER_PAGE;
                 $pages->applyLimit($criteria);
                 $_project_model_imges = Images::model()->findAll($criteria);
-                
-                
+
+
                 $criteria = new CDbCriteria();
                 $criteria->order = 'id DESC';
                 $criteria->addCondition("(project_id=$_project_id and bg_img=1 and img_serial=5) OR (project_key='XXX' and bg_img=1)");
@@ -153,37 +165,39 @@ class SiteController extends AppController {
                 $pages->pageSize = VIEW_PER_PAGE;
                 $pages->applyLimit($criteria);
                 $_project_bg_model_imges = Images::model()->findAll($criteria);
-                
-                
+
+
+
                 $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_partial_bg_img_view'], array(
-                'models' => $_project_model_imges,
-                'modelsbg' => $_project_bg_model_imges,
-                'project_img_id' => $result['bg_id'],
-                'pages' => $pages,
-                'total' => $count,
-                '_upload_message'=>$_upload_message
-                ), true);
-                
+                    'models' => $_project_model_imges,
+                    'modelsbg' => $_project_bg_model_imges,
+                    'project_img_id' => $result['bg_id'],
+                    'pages' => $pages,
+                    'total' => $count,
+                    '_upload_message' => $_upload_message
+                        ), true);
+
                 echo CJSON::encode(array(
-                        'message' => $_upload_message,
-                        'dataset' => $_data,
+                    'message' => $_upload_message,
+                    'dataset' => $_data,
                 ));
             }
         }
         exit();
     }
+
     public function actionLoadimages() {
         if (!empty($_POST['ukey'])) {
-            
+
             $_ukey = $_POST['ukey'];
             $_file_name = $_POST['newimage'];
             $_imgpos = $_POST['imgpos'];
-            
+
             $_owner_id = Yii::app()->user->getId();
             $command = Yii::app()->db->createCommand("SELECT * From tbl_projects where owner_id = '$_owner_id' and mode = 0 and ukey='$_ukey'");
             $result = $command->queryRow();
             $_upload_message = "";
-            $_done=false;
+            $_done = false;
             if (isset($result['ukey'])) {
                 $_project_id = $result['id'];
                 if (!empty($_file_name)) {
@@ -191,30 +205,33 @@ class SiteController extends AppController {
                     $new_filename = Helpers::getFilenameAsUnique($savepath, $_file_name);
                     $savepath = Yii::getPathOfAlias('webroot') . '/collage/' . $_file_name;
                     $newsavepath = Yii::getPathOfAlias('webroot') . '/collage/';
+                    $thumb_name = Helpers::getFilenameAsUniqueThumb($savepath, $_file_name);
                     Helpers::fileRename($savepath, $new_filename, $newsavepath);
                     $logo_thumbnail = $new_filename;
-                    
+
                     $commandyes = Yii::app()->db->createCommand("SELECT * From tbl_images where project_key = '$_ukey' and img_serial = $_imgpos");
                     $back_img = $commandyes->queryRow();
-                   
-                    if(isset($back_img['img_serial'])){
+
+                    if (isset($back_img['img_serial'])) {
                         $model_img = Images::model()->findByPk($back_img['id']);
-                    }else{
+                    } else {
                         $model_img = new Images();
                         $model_img->img_key = Helpers::getUnqiueKey();
                         $model_img->project_id = $_project_id;
                         $model_img->project_key = $_ukey;
                         $model_img->created_at = date(DB_INSERT_TIME_FORMAT, time());
                     }
-                    $_done =true;
+                    $_done = true;
                     $model_img->img_serial = $_imgpos;
                     $model_img->main_img = $_file_name;
                     $model_img->cropped_img = $new_filename;
-                    if($_imgpos==5){
-                       $model_img->bg_img = 1; 
+                    $model_img->thumb_image = $thumb_name;
+                    if ($_imgpos == 5) {
+                        $model_img->bg_img = 1;
                     }
+                    $pathToThumbs = DTUploadedFile::creeatRecurSiveDirectories(array("thumbs"));
+                    DTUploadedFile::createThumbs($savepath, $pathToThumbs, 170, $thumb_name);
                     $model_img->save();
-                    
                 }
                 $_retArray = '';
                 $criteria = new CDbCriteria();
@@ -225,8 +242,8 @@ class SiteController extends AppController {
                 $pages->pageSize = VIEW_PER_PAGE;
                 $pages->applyLimit($criteria);
                 $_project_model_imges = Images::model()->findAll($criteria);
-                
-                
+
+
                 $criteria = new CDbCriteria();
                 $criteria->order = 'id DESC';
                 $criteria->addCondition("(project_id=$_project_id and bg_img=1 and img_serial=5) OR (project_key='XXX' and bg_img=1)");
@@ -235,42 +252,42 @@ class SiteController extends AppController {
                 $pages->pageSize = VIEW_PER_PAGE;
                 $pages->applyLimit($criteria);
                 $_project_bg_model_imges = Images::model()->findAll($criteria);
-                
-                
+
+
                 $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_partial_img_view'], array(
-                'models' => $_project_model_imges,
-                'modelsbg' => $_project_bg_model_imges,
-                'project_img_id' => $result['bg_id'],
-                'pages' => $pages,
-                'total' => $count,
-                '_upload_message'=>$_upload_message
-                ), true);
-                
+                    'models' => $_project_model_imges,
+                    'modelsbg' => $_project_bg_model_imges,
+                    'project_img_id' => $result['bg_id'],
+                    'pages' => $pages,
+                    'total' => $count,
+                    '_upload_message' => $_upload_message
+                        ), true);
+
                 echo CJSON::encode(array(
-                        'message' => $_upload_message,
-                        'dataset' => $_data,
+                    'message' => $_upload_message,
+                    'dataset' => $_data,
                 ));
             }
         }
         exit();
     }
-    
-    public function actionLoaddefaultimages(){
+
+    public function actionLoaddefaultimages() {
         if (!empty($_POST['ukey'])) {
-            
+
             $_ukey = $_POST['ukey'];
-            
-            $_done=false;
+
+            $_done = false;
             $_upload_message = "";
-                $_done=true;
-                $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_default_project_img_view'], array(
-                    '_upload_message'=>$_upload_message
-                ), true);
-                
-                echo CJSON::encode(array(
-                        'message' => $_upload_message,
-                        'dataset' => $_data,
-                ));
+            $_done = true;
+            $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_default_project_img_view'], array(
+                '_upload_message' => $_upload_message
+                    ), true);
+
+            echo CJSON::encode(array(
+                'message' => $_upload_message,
+                'dataset' => $_data,
+            ));
         }
         exit();
     }
@@ -301,18 +318,18 @@ class SiteController extends AppController {
             $_done = false;
             if (isset($result['ukey'])) {
                 $_project_id = $result['id'];
-                
-                
+
+
                 $commandyes = Yii::app()->db->createCommand("SELECT * From tbl_images where img_key = '$_img_key'");
                 $back_img = $commandyes->queryRow();
-                
-                if(isset($back_img['img_key'])){
-                    
-                     $model_project = Project::model()->findByPk($_project_id);
-                     $model_project->bg_id = $back_img['id'];
-                     $model_project->save();
+
+                if (isset($back_img['img_key'])) {
+
+                    $model_project = Project::model()->findByPk($_project_id);
+                    $model_project->bg_id = $back_img['id'];
+                    $model_project->save();
                 }
-                
+
                 $_retArray = '';
                 $criteria = new CDbCriteria();
                 $criteria->order = 'id DESC';
@@ -349,7 +366,6 @@ class SiteController extends AppController {
                     'message' => $_upload_message,
                     'cc' => $result['bg_id'],
                     'dataset' => $_data,
-                    
                 ));
             }
         }
@@ -405,7 +421,7 @@ class SiteController extends AppController {
             $_owner_id = Yii::app()->user->getId();
             $command = Yii::app()->db->createCommand("SELECT * From tbl_projects where owner_id = '$_owner_id' and mode = 0 and ukey='$_ukey'");
             $result = $command->queryRow();
-            
+
             if (isset($result['ukey'])) {
                 $_project_id = $result['id'];
                 if (!empty($_imgkey)) {
@@ -428,8 +444,8 @@ class SiteController extends AppController {
                         } else {
                             $jpeg_quality = 9;
                         }
-                       $pinfo = pathinfo($result_img['cropped_img'], PATHINFO_EXTENSION);
-                        echo 'ssss '.$pinfo;
+                        $pinfo = pathinfo($result_img['cropped_img'], PATHINFO_EXTENSION);
+                        echo 'ssss ' . $pinfo;
                         $src = 'collage/' . $result_img['main_img'];
                         $dsrc = 'collage/' . $new_crop_file_name;
                         if ($_ext == '.png' || $_ext == '.PNG') {
@@ -437,10 +453,10 @@ class SiteController extends AppController {
                             $img_r = imagecreatefrompng($src);
                             $dst_r = ImageCreateTrueColor($targ_wmain, $targ_hmain);
                             imagecopyresampled($dst_r, $img_r, 0, 0, $targ_x, $targ_y, $targ_wmain, $targ_hmain, $targ_w, $targ_h);
-                            if(imagepng($dst_r, $dsrc, $jpeg_quality)){
-                            echo $new_crop_file_name."done";
-                            }else{
-                            echo "fail";
+                            if (imagepng($dst_r, $dsrc, $jpeg_quality)) {
+                                echo $new_crop_file_name . "done";
+                            } else {
+                                echo "fail";
                             }
                         } else if ($_ext == '.gif' || $_ext == '.GIF') {
                             $jpeg_quality = 9;
@@ -454,10 +470,9 @@ class SiteController extends AppController {
                             imagecopyresampled($dst_r, $img_r, 0, 0, $targ_x, $targ_y, $targ_wmain, $targ_hmain, $targ_w, $targ_h);
                             imagejpeg($dst_r, $dsrc, $jpeg_quality);
                         }
-                        
+
                         $command_update = Yii::app()->db->createCommand("UPDATE `tbl_images` SET `cropped_img` = '$new_crop_file_name' WHERE project_key='$_ukey' and img_key = '$_imgkey'");
                         $command_update->execute();
-                        
                     }
                 }
                 $criteria = new CDbCriteria();
@@ -469,21 +484,20 @@ class SiteController extends AppController {
                 $pages->applyLimit($criteria);
                 $_project_model_imges = Images::model()->findAll($criteria);
                 echo CJSON::encode(array(
-                        'new_crop_file_name' => $new_crop_file_name,
-                        'imgkey' => $_imgkey,
+                    'new_crop_file_name' => $new_crop_file_name,
+                    'imgkey' => $_imgkey,
                 ));
-                
-                /*echo $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_partial_img_view'], array(
-                'models' => $_project_model_imges,
-                'pages' => $pages,
-                'total' => $count
-                    ), true);*/
-                
-                }
+
+                /* echo $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_partial_img_view'], array(
+                  'models' => $_project_model_imges,
+                  'pages' => $pages,
+                  'total' => $count
+                  ), true); */
+            }
         }
         exit();
     }
-    
+
     public function actionScaleimg() {
 
         if (!empty($_POST['ukey'])) {
@@ -511,7 +525,7 @@ class SiteController extends AppController {
 
                         $targ_y = 0;
 
-                        
+
                         $savepath = Yii::getPathOfAlias('webroot') . '/collage/' . $result_img['main_img'];
 
                         if (1) {
@@ -551,11 +565,10 @@ class SiteController extends AppController {
                             imagecopyresized($dst_r, $img_r, 0, 0, 0, 0, $targ_w, $targ_h, $mywidth, $myheight);
                             imagejpeg($dst_r, $dsrc, $jpeg_quality);
                         }
-                       
-                        
+
+
                         $command_update = Yii::app()->db->createCommand("UPDATE `tbl_images` SET `cropped_img` = '$new_crop_file_name' WHERE project_key='$_ukey' and img_key = '$_imgkey'");
                         $command_update->execute();
-                        
                     }
                 }
 
@@ -567,8 +580,8 @@ class SiteController extends AppController {
                 $pages->pageSize = VIEW_PER_PAGE;
                 $pages->applyLimit($criteria);
                 $_project_model_imges = Images::model()->findAll($criteria);
-                
-                
+
+
                 $criteria = new CDbCriteria();
                 $criteria->order = 'id DESC';
                 $criteria->addCondition("(project_id=$_project_id and bg_img=1 and img_serial=5) OR (project_key='XXX' and bg_img=1)");
@@ -577,20 +590,21 @@ class SiteController extends AppController {
                 $pages->pageSize = VIEW_PER_PAGE;
                 $pages->applyLimit($criteria);
                 $_project_bg_model_imges = Images::model()->findAll($criteria);
-                
-                
+
+
                 echo $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_partial_img_view'], array(
-                'models' => $_project_model_imges,
-                'modelsbg' => $_project_bg_model_imges,
-                'project_img_id' => $result['bg_id'],
-                'pages' => $pages,
-                'total' => $count
-                    ), true);
-                }
+            'models' => $_project_model_imges,
+            'modelsbg' => $_project_bg_model_imges,
+            'project_img_id' => $result['bg_id'],
+            'pages' => $pages,
+            'total' => $count
+                ), true);
+            }
         }
         exit();
     }
-     public function actionCropbgimg() {
+
+    public function actionCropbgimg() {
 
         if (!empty($_POST['ukey'])) {
             $_ukey = $_POST['ukey'];
@@ -654,11 +668,10 @@ class SiteController extends AppController {
                             imagecopyresampled($dst_r, $img_r, 0, 0, $targ_x, $targ_y, $targ_wmain, $targ_hmain, $targ_w, $targ_h);
                             imagejpeg($dst_r, $dsrc, $jpeg_quality);
                         }
-                       
-                        
+
+
                         $command_update = Yii::app()->db->createCommand("UPDATE `tbl_images` SET `cropped_img` = '$new_crop_file_name' WHERE project_key='$_ukey' and img_key = '$_imgkey'");
                         $command_update->execute();
-                        
                     }
                 }
 
@@ -670,8 +683,8 @@ class SiteController extends AppController {
                 $pages->pageSize = VIEW_PER_PAGE;
                 $pages->applyLimit($criteria);
                 $_project_model_imges = Images::model()->findAll($criteria);
-                
-                
+
+
                 $criteria = new CDbCriteria();
                 $criteria->order = 'id DESC';
                 $criteria->addCondition("(project_id=$_project_id and bg_img=1 and img_serial=5) OR (project_key='XXX' and bg_img=1)");
@@ -680,19 +693,20 @@ class SiteController extends AppController {
                 $pages->pageSize = VIEW_PER_PAGE;
                 $pages->applyLimit($criteria);
                 $_project_bg_model_imges = Images::model()->findAll($criteria);
-                
-                
+
+
                 echo $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_partial_bg_img_view'], array(
-                'models' => $_project_model_imges,
-                'modelsbg' => $_project_bg_model_imges,
-                'project_img_id' => $result['bg_id'],
-                'pages' => $pages,
-                'total' => $count
-                    ), true);
-                }
+            'models' => $_project_model_imges,
+            'modelsbg' => $_project_bg_model_imges,
+            'project_img_id' => $result['bg_id'],
+            'pages' => $pages,
+            'total' => $count
+                ), true);
+            }
         }
         exit();
     }
+
     public function actionCropimg() {
 
         if (!empty($_POST['ukey'])) {
@@ -757,11 +771,10 @@ class SiteController extends AppController {
                             imagecopyresampled($dst_r, $img_r, 0, 0, $targ_x, $targ_y, $targ_wmain, $targ_hmain, $targ_w, $targ_h);
                             imagejpeg($dst_r, $dsrc, $jpeg_quality);
                         }
-                       
-                        
+
+
                         $command_update = Yii::app()->db->createCommand("UPDATE `tbl_images` SET `cropped_img` = '$new_crop_file_name' WHERE project_key='$_ukey' and img_key = '$_imgkey'");
                         $command_update->execute();
-                        
                     }
                 }
 
@@ -773,8 +786,8 @@ class SiteController extends AppController {
                 $pages->pageSize = VIEW_PER_PAGE;
                 $pages->applyLimit($criteria);
                 $_project_model_imges = Images::model()->findAll($criteria);
-                
-                
+
+
                 $criteria = new CDbCriteria();
                 $criteria->order = 'id DESC';
                 $criteria->addCondition("(project_id=$_project_id and bg_img=1 and img_serial=5) OR (project_key='XXX' and bg_img=1)");
@@ -783,20 +796,21 @@ class SiteController extends AppController {
                 $pages->pageSize = VIEW_PER_PAGE;
                 $pages->applyLimit($criteria);
                 $_project_bg_model_imges = Images::model()->findAll($criteria);
-                
-                
+
+
                 echo $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_partial_img_view'], array(
-                'models' => $_project_model_imges,
-                'modelsbg' => $_project_bg_model_imges,
-                'project_img_id' => $result['bg_id'],
-                'pages' => $pages,
-                'total' => $count
-                    ), true);
-                }
+            'models' => $_project_model_imges,
+            'modelsbg' => $_project_bg_model_imges,
+            'project_img_id' => $result['bg_id'],
+            'pages' => $pages,
+            'total' => $count
+                ), true);
+            }
         }
         exit();
     }
-   public function actionDeletebgimage() {
+
+    public function actionDeletebgimage() {
         if (!empty($_POST['ukey'])) {
             $_ukey = $_POST['ukey'];
             $_imgkey = $_POST['imgkey'];
@@ -823,17 +837,16 @@ class SiteController extends AppController {
                     }
                 }
 
-                
+
                 $commandyes = Yii::app()->db->createCommand("SELECT * From tbl_images where project_key = '$_ukey' and bg_img = 1");
                 $back_img = $commandyes->queryRow();
-                
-                if(isset($back_img['project_key'])){
-                     
+
+                if (isset($back_img['project_key'])) {
+
                     $_upload_message = 'To upload a new backgorund image you must have to delete your previous background image.';
-                    
                 }
-                
-                
+
+
                 $criteria = new CDbCriteria();
                 $criteria->order = 'id DESC';
                 $criteria->addCondition("project_id=$_project_id");
@@ -843,21 +856,20 @@ class SiteController extends AppController {
                 $pages->applyLimit($criteria);
                 $_project_model_imges = Images::model()->findAll($criteria);
                 $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_partial_bg_img_view'], array(
-                'models' => $_project_model_imges,
-                'pages' => $pages,
-                'total' => $count
-                    ), true);
-                
+                    'models' => $_project_model_imges,
+                    'pages' => $pages,
+                    'total' => $count
+                        ), true);
+
                 echo CJSON::encode(array(
-                        'message' => $_upload_message,
-                        'dataset' => $_data,
+                    'message' => $_upload_message,
+                    'dataset' => $_data,
                 ));
-                
-                
-                }
+            }
         }
         exit();
     }
+
     public function actionDeleteimage() {
         if (!empty($_POST['ukey'])) {
             $_ukey = $_POST['ukey'];
@@ -885,17 +897,16 @@ class SiteController extends AppController {
                     }
                 }
 
-                
+
                 $commandyes = Yii::app()->db->createCommand("SELECT * From tbl_images where project_key = '$_ukey' and bg_img = 1");
                 $back_img = $commandyes->queryRow();
-                
-                if(isset($back_img['project_key'])){
-                     
+
+                if (isset($back_img['project_key'])) {
+
                     $_upload_message = 'To upload a new backgorund image you must have to delete your previous background image.';
-                    
                 }
-                
-                
+
+
                 $criteria = new CDbCriteria();
                 $criteria->order = 'id DESC';
                 $criteria->addCondition("project_id=$_project_id");
@@ -905,31 +916,31 @@ class SiteController extends AppController {
                 $pages->applyLimit($criteria);
                 $_project_model_imges = Images::model()->findAll($criteria);
                 $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_partial_img_view'], array(
-                'models' => $_project_model_imges,
-                'pages' => $pages,
-                'total' => $count
-                    ), true);
-                
+                    'models' => $_project_model_imges,
+                    'pages' => $pages,
+                    'total' => $count
+                        ), true);
+
                 echo CJSON::encode(array(
-                        'message' => $_upload_message,
-                        'dataset' => $_data,
+                    'message' => $_upload_message,
+                    'dataset' => $_data,
                 ));
-                
-                
-                }
+            }
         }
         exit();
     }
 
     public function actionCollage() {
         $_user_id = Yii::app()->user->getId();
-        if($_user_id<=0){$this->redirect(array('site/signin'));}
+        if ($_user_id <= 0) {
+            $this->redirect(array('site/signin'));
+        }
         if (!empty($_GET['ukey'])) {
             $_ukey = $_GET['ukey'];
             $_owner_id = Yii::app()->user->getId();
             $command = Yii::app()->db->createCommand("SELECT * From tbl_projects where owner_id = '$_owner_id' and mode = 0 and ukey='$_ukey'");
             $result = $command->queryRow();
-            
+
             if (isset($result['ukey'])) {
                 $_id = $result['id'];
                 $model = $this->loadModel($_id);
@@ -948,7 +959,7 @@ class SiteController extends AppController {
                 $_image_id = $model->bg_id;
                 $command = Yii::app()->db->createCommand("SELECT * From tbl_images where id=$_image_id and bg_img = 1");
                 $result_bg = $command->queryRow();
-                 //print_r($result_bg);exit();
+                //print_r($result_bg);exit();
                 $this->render(Yii::app()->params['AppViews']['si_project_collage'], array(
                     'model' => $model,
                     'imgmodel' => $_project_img_models,
@@ -963,7 +974,9 @@ class SiteController extends AppController {
 
     public function actionDownloadcollage() {
         $_user_id = Yii::app()->user->getId();
-        if($_user_id<=0){$this->redirect(array('site/signin'));}
+        if ($_user_id <= 0) {
+            $this->redirect(array('site/signin'));
+        }
         if (!empty($_GET['ukey'])) {
             $_ukey = $_GET['ukey'];
             $_owner_id = Yii::app()->user->getId();
@@ -994,7 +1007,9 @@ class SiteController extends AppController {
 
     public function actionSuccess() {
         $_user_id = Yii::app()->user->getId();
-        if($_user_id<=0){$this->redirect(array('site/signin'));}
+        if ($_user_id <= 0) {
+            $this->redirect(array('site/signin'));
+        }
         if (!empty($_GET['ukey'])) {
             $_ukey = $_GET['ukey'];
             $_owner_id = Yii::app()->user->getId();
@@ -1044,8 +1059,8 @@ class SiteController extends AppController {
     }
 
     public function actionSignin() {
-        if (isset(Yii::app()->user->useremail)) { 
-             $this->redirect(array(Yii::app()->params['AppUrls']['si_dashboard']));
+        if (isset(Yii::app()->user->useremail)) {
+            $this->redirect(array(Yii::app()->params['AppUrls']['si_dashboard']));
         }
         $this->layout = 'resadmin';
         $model = new LoginForm('login');
@@ -1133,11 +1148,11 @@ class SiteController extends AppController {
             }
         }
         $model = new User;
-        /*$this->layout = 'sitewheader';
-        $this->render(Yii::app()->params['AppViews']['si_forgotpass'], array(
-            'model' => $model,
-            'message' => $message
-        ));*/
+        /* $this->layout = 'sitewheader';
+          $this->render(Yii::app()->params['AppViews']['si_forgotpass'], array(
+          'model' => $model,
+          'message' => $message
+          )); */
         $this->layout = 'resadmin';
         $this->render('siforgotpass', array(
             'model' => $model,
@@ -1238,12 +1253,12 @@ class SiteController extends AppController {
             'success' => $success,
             'allcountries' => $allcountries
         ));
-        /*$this->render(Yii::app()->params['AppViews']['si_signup'], array(
-            'model' => $model,
-            'message' => $message,
-            'success' => $success,
-            'allcountries' => $allcountries
-        ));*/
+        /* $this->render(Yii::app()->params['AppViews']['si_signup'], array(
+          'model' => $model,
+          'message' => $message,
+          'success' => $success,
+          'allcountries' => $allcountries
+          )); */
     }
 
     public function actionActivepassword() {
@@ -1287,11 +1302,11 @@ class SiteController extends AppController {
             'passkey' => $passkey,
             'message' => $message,
         ));
-        /*$this->render(Yii::app()->params['AppViews']['active_password'], array(
-            'model' => $model,
-            'passkey' => $passkey,
-            'message' => $message,
-        ));*/
+        /* $this->render(Yii::app()->params['AppViews']['active_password'], array(
+          'model' => $model,
+          'passkey' => $passkey,
+          'message' => $message,
+          )); */
     }
 
     public function actionChangepassword() {
@@ -1340,16 +1355,16 @@ class SiteController extends AppController {
                         $findAct->execute();
                         $message = "Your account is successfully activated!";
                     }
-                    
+
                     $this->layout = 'resadmin';
-        
+
                     $this->render('siverify_view', array(
                         'message' => $message,
                     ));
-                    
-                    /*$this->render(Yii::app()->params['AppViews']['verify_view'], array(
-                        'message' => $message,
-                    ));*/
+
+                    /* $this->render(Yii::app()->params['AppViews']['verify_view'], array(
+                      'message' => $message,
+                      )); */
                 } else {
                     $this->redirect(array('site/error'));
                 }
@@ -1390,10 +1405,10 @@ class SiteController extends AppController {
         $this->render('sisi_error', array(
             'message' => $message
         ));
-         
-        /*$this->render(Yii::app()->params['AppViews']['si_error'], array(
-            'message' => $message
-        ));*/
+
+        /* $this->render(Yii::app()->params['AppViews']['si_error'], array(
+          'message' => $message
+          )); */
     }
 
     public function sendForgotpassEmail($email = '', $code = '') {

@@ -43,7 +43,7 @@
             element: $('#uploadBackground')[0],
             multiple: false,
             request: {
-                endpoint: '<?php echo Yii::app()->request->baseUrl; ?>' + "/uploader.php"
+                endpoint: '<?php echo $this->createUrl('/upload/fileUpload'); ?>'
             },
             validation: {
                 allowedExtensions: ['jpeg', 'jpg', 'png', 'JPEG', 'JPG', 'PNG']
@@ -70,7 +70,7 @@
             element: $('#img1')[0],
             multiple: false,
             request: {
-                endpoint: '<?php echo Yii::app()->request->baseUrl; ?>' + "/uploader.php"
+                endpoint: '<?php echo $this->createUrl('/upload/fileUpload'); ?>'
             },
             validation: {
                 allowedExtensions: ['jpeg', 'jpg', 'png', 'JPEG', 'JPG', 'PNG']
@@ -96,7 +96,7 @@
             element: $('#img2')[0],
             multiple: false,
             request: {
-                endpoint: '<?php echo Yii::app()->request->baseUrl; ?>' + "/uploader.php"
+                endpoint: '<?php echo $this->createUrl('/upload/fileUpload'); ?>'
             },
             validation: {
                 allowedExtensions: ['jpeg', 'jpg', 'png', 'JPEG', 'JPG', 'PNG']
@@ -122,7 +122,7 @@
             element: $('#img3')[0],
             multiple: false,
             request: {
-                endpoint: '<?php echo Yii::app()->request->baseUrl; ?>' + "/uploader.php"
+                endpoint: '<?php echo $this->createUrl('/upload/fileUpload'); ?>'
             },
             validation: {
                 allowedExtensions: ['jpeg', 'jpg', 'png', 'JPEG', 'JPG', 'PNG']
@@ -148,7 +148,7 @@
             element: $('#img4')[0],
             multiple: false,
             request: {
-                endpoint: '<?php echo Yii::app()->request->baseUrl; ?>' + "/uploader.php"
+                endpoint: '<?php echo $this->createUrl('/upload/fileUpload'); ?>'
             },
             validation: {
                 allowedExtensions: ['jpeg', 'jpg', 'png', 'JPEG', 'JPG', 'PNG']

@@ -17,7 +17,7 @@ class RequireLogin extends CBehavior {
         //echo $route;exit();
         $routepieces = explode("/", $route);
        // echo $routepieces[0];exit();
-        if (in_array($routepieces[0], array('site', ''))) { /// Push login free controller name here
+        if (in_array($routepieces[0], array('site', 'upload',''))) { /// Push login free controller name here
             $site_mode = Helpers::siteMode();
             if ($site_mode) {
                 if (!in_array($route, array('site/message'))) {

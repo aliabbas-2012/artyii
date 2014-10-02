@@ -259,6 +259,21 @@ class Helpers extends AppClass {
         $fName = Helpers::getUnqiueKey();
         return $fName . $ext;
     }
+    /**
+     * 
+     * @param type $remdir
+     * @param type $file
+     * @return type
+     */
+    public static function getFilenameAsUniqueThumb($remdir, $file) {
+        $pos = strrpos($file, '.');
+        $ext = substr($file, $pos);
+        $dir = strrpos($file, '/');
+        $dr = substr($file, 0, ($dir + 1));
+        $arr = explode('/', $file);
+        $fName = Helpers::getUnqiueKey();
+        return $fName."_thumb" . $ext;
+    }
 
     public static function getUnqiueKey() {
         return strtoupper(uniqid() . date('s'));

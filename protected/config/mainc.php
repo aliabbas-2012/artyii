@@ -9,6 +9,7 @@ return array(
         'application.vendors.phpexcel.PHPExcel',
         'application.models.*',
         'application.components.*',
+        'application.components.qupload.*',
         'application.extensions.recaptcha.EReCaptcha',
     ),
     'behaviors' => array(
@@ -36,19 +37,15 @@ return array(
         'db' => array(
             //local
             'connectionString' => 'mysql:host=localhost;dbname=hostpap_gameportal',
-           
             'emulatePrepare' => true,
-        
             'username' => 'hostpap_gamepor',
-           
             'password' => 'gameportal',
-         
             'charset' => 'utf8',
             'tablePrefix' => '',
         ),
         'errorHandler' => array(
         // use 'site/error' action to display errors
-             //'errorAction' => 'admin/error'
+        //'errorAction' => 'admin/error'
         ),
         'urlManager' => array(
             'urlFormat' => 'path',

@@ -7,6 +7,7 @@ return array(
     'import' => array(
         'application.models.*',
         'application.components.*',
+        'application.components.qupload.*',
         'application.extensions.recaptcha.EReCaptcha',
     ),
     'behaviors' => array(

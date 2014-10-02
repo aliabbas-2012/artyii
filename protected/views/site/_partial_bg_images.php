@@ -49,7 +49,14 @@
             <?php for ($i = 0; $i < count($modelsbg); $i++) { ?>
 
                 <div style="padding:10px;width:20%;float:left;">
-                    <img alter="collage" style="width:180px;height:120px;" class="cropper" src="<?php echo Yii::app()->request->baseUrl; ?>/collage/<?php echo $modelsbg[$i]->cropped_img; ?>">
+                    <?php
+                        $thumb_image = $modelsbg[$i]->cropped_img;
+                        if(!empty($modelsbg[$i]->thumb_image)){
+                            $thumb_image = "thumbs/".$modelsbg[$i]->thumb_image;;
+                        }
+                        
+                    ?>
+                    <img alter="collage" style="width:180px;height:120px;" class="cropper" src="<?php echo Yii::app()->request->baseUrl; ?>/collage/<?php echo $thumb_image ; ?>">
                     <br>
                     <?php if ($modelsbg[$i]->project_key != 'XXX') { ?>
                         <a class="delete_img" imgkey="<?php echo $modelsbg[$i]->img_key; ?>" style="color:red;" href="javascript://">Delete</a>
@@ -76,11 +83,5 @@
         'pages' => $pages,
     ))
     ?>
-
-
-
-
-
-
 
 </div>

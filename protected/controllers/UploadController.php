@@ -24,4 +24,15 @@ class UploadController extends Controller {
         echo CJSON::encode($result);
     }
 
+    public function actionRotateImage() {
+        $id = $_POST['id'];
+         $angle = $_POST['angle'];
+       
+        $image = Images::model()->findByPk($id);
+        $image_path = Yii::getPathOfAlias('webroot.collage')."/".$image->cropped_img;
+        $pathToThumbs = Yii::getPathOfAlias('webroot.collage.');
+        $thumb = DTUploadedFile::rotateImage($image_path, $pathToThumbs, $angle);
+        
+    }
+
 }

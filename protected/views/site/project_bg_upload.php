@@ -21,7 +21,8 @@
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/dnd.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/uploader.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/jquery-plugin.js"></script>
-
+<script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/jQueryRotate.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
 <script>
     var scalew = 0;
     var scaleh = 0;
@@ -94,7 +95,7 @@
             imgkey: imgkey,
             ukey: ukey
         }, function(data) {
-
+            $(".image_container").html("");
             if (data) {
                 $('.imgblock').html(data.dataset);
             }
@@ -114,6 +115,9 @@
             imgkey: imgkey,
             ukey: ukey
         }, function(data) {
+            data = JSON.parse(data);
+            console.log(data);
+            $(".image_container").html(data.cropped_image);
             $('.imgblock').html(data.dataset);
             $("#saveit").removeAttr('disabled', 'disabled');
             newimage = '';
@@ -179,7 +183,7 @@
     });
 
     $('.delete_img').live("click", function(e) {
-        
+
         imgkey = $(this).attr('imgkey');
         var r = confirm("WARNING: Image will be deleted. Are you sure you want to delete this image?");
         if (r == true)
@@ -348,7 +352,31 @@
         $('#w').val(c.w);
         $('#h').val(c.h);
     }
-    ;
+
+    function roatate_image() {
+        if ($(".image_container img").length > 0) {
+
+            $(".image_container img").rotate({
+                angle: 0,
+                animateTo: parseInt(jQuery("#angles").val()),
+                callback: rotation,
+                easing: function(x, t, b, c, d) {        // t: current time, b: begInnIng value, c: change In value, d: duration
+                    return c * (t / d) + b;
+                }
+            });
+        }
+        else {
+            alert("Please upload image first to rotate");
+        }
+    }
+    function rotation() {
+        $.post('<?php echo $this->createUrl("/upload/rotateImage"); ?>', {
+            angle: parseInt(jQuery("#angles").val()),
+            id: $(".image_container img").attr("alt"),
+        }, function(data) {
+
+        }, "json");
+    }
 </script>
 <script>
     var ukey = '<?php echo $_GET["ukey"]; ?>';
@@ -363,12 +391,50 @@
     <div style="min-height: 300px; background:white;">
         <div id="pageTitle" style="text-align: center;">
             <h2 class="thick-title page-title-bar">Project - <?php echo $model->name; ?></h2>
-        </div><br><br>
+        </div>
+
+        <br><br>
         <div class="col-lg-12 col-md-12 col-sm-12 imgchanel">
             <div style="text-align:center;"><span class="step"><b style="font-size:30px;">Step 2</b></span> <span class="headingname">Select Background Images</span></div>
             <br>
+            <div class="crop_center">
+                <a href="javascript:void(0)" onclick="roatate_image()">Rotate to this Angle</a>
+                &nbsp;
+                <select id="angles">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="45">45</option>
+                    <option value="75">75</option>
+                    <option value="90">90</option>
+                    <option value="120">120</option>
+                    <option value="150">150</option>
+                    <option value="180">180</option>
+                    <option value="360">360</option>
+                </select>
+            </div>
+            <br>
             <div class="wrapper-box">
                 <div class="wrapper-content">
+
+                    <br/>
+                    <div class="image_container">
+                        <?php
+                        $criteria = new CDbCriteria();
+                        $criteria->addCondition("project_key = :project_key AND bg_img=1");
+                        $criteria->params = array("project_key" => $_GET['ukey']);
+                        $criteria->order = "id DESC";
+                        $current_Image = Images::model()->find($criteria);
+
+                        if ($current_Image = Images::model()->find($criteria)) {
+                            echo $cropped_image = CHtml::image(Yii::app()->baseUrl . "/collage/" . $current_Image->cropped_img, $current_Image->id);
+                        } else {
+                            $current_Image = Images::model()->findByPk($model->bg_id);
+                            echo $cropped_image = CHtml::image(Yii::app()->baseUrl . "/collage/" . $current_Image->cropped_img, $current_Image->id);
+                        }
+                        ?>
+                    </div>
+
                     <div class="row imgblock" style="margin: 20px;" >
 
                     </div>

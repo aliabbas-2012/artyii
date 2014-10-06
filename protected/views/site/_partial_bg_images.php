@@ -60,7 +60,7 @@
                     <br>
                     <?php if ($modelsbg[$i]->project_key != 'XXX') { ?>
                         <a class="delete_img" imgkey="<?php echo $modelsbg[$i]->img_key; ?>" style="color:red;" href="javascript://">Delete</a>
-                        <a class="edit_img" img_name="<?php echo $modelsbg[$i]->main_img; ?>" imgkey="<?php echo $modelsbg[$i]->img_key; ?>" style="color:red;" href="javascript://">| Edit</a>
+                        <a class="edit_img" img_name="<?php echo $modelsbg[$i]->cropped_img; ?>" imgkey="<?php echo $modelsbg[$i]->img_key; ?>" style="color:red;" href="javascript://">| Edit</a>
                         <a class="make_bg" img_name="<?php echo $modelsbg[$i]->main_img; ?>" imgkey="<?php echo $modelsbg[$i]->img_key; ?>" style="color:red;" href="javascript://">| Use As Background</a>
                     <?php } else { ?>
                         <a class="make_bg" img_name="<?php echo $modelsbg[$i]->main_img; ?>" imgkey="<?php echo $modelsbg[$i]->img_key; ?>" style="color:red;" href="javascript://">Use As Background</a>

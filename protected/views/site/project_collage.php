@@ -598,7 +598,13 @@
                                 <div style="width:100%;margin-top:60px;">
 
                                     <?php if (isset($result_bg['cropped_img']) && !empty($result_bg['cropped_img'])) { ?>
-
+                                        <?php
+                                        $thumb_bg_image = $result_bg['cropped_img'];
+                                        if (!empty($result_bg['thumb_image'])) {
+                                            $thumb_bg_image = "thumbs/" . $result_bg['thumb_image'];
+                                            
+                                        }
+                                        ?>
                                         <div style="width:20%;float:left;">
 
                                             <div style="color:white; padding:20px;background:#0396e3;border: 5px solid #CCC">
@@ -611,7 +617,7 @@
                                                 } else {
                                                     echo "not_edit_img";
                                                 }
-                                                ?>" background="yes" img_name="<?php echo $result_bg['main_img']; ?>" imgkey="<?php echo $result_bg['img_key']; ?>" style="cursor:pointer; width: 192px;height: 200px;" src="<?php echo BASE_URL; ?>/collage/<?php echo $result_bg['main_img']; ?>" alt="alt" />
+                                                ?>" background="yes" img_name="<?php echo $result_bg['main_img']; ?>" imgkey="<?php echo $result_bg['img_key']; ?>" style="cursor:pointer; width: 192px;height: 200px;" src="<?php echo BASE_URL; ?>/collage/<?php echo $thumb_bg_image; ?>" alt="alt" />
                                             </div>
                                         </div>
 
@@ -635,12 +641,12 @@
                                                     IMAGE <?php echo $i + 1; ?>
                                                 </div>
                                                 <div style="border: 5px solid #fff;padding:10px;">
-                                                    <img background="no" class="edit_img" img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="cursor:pointer; width: 192px;height: 200px;" src="<?php echo BASE_URL; ?>/collage/<?php echo $thumb_image; ?>" alt="alt" />
+                                                    <img background="no" class="edit_img" img_name="<?php echo $thumb_image; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="cursor:pointer; width: 192px;height: 200px;" src="<?php echo BASE_URL; ?>/collage/<?php echo $thumb_image; ?>" alt="alt" />
 
 
                                                     <br>
                             <!--<a class="scale_img" img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="color:red;" href="javascript://">Scale |</a>-->
-                                                    <a class="edit_img" img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="color:red;" href="javascript://"> Crop</a>
+                                                    <a class="edit_img" cropped_image="<?php echo $imgmodel[$i]->cropped_img; ?>" img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="color:red;" href="javascript://"> Crop</a>
 
 
                                                 </div>
@@ -757,7 +763,7 @@
                 $('#w').val('');
                 $('#h').val('');
                 $("#savecrop").removeAttr('disabled', 'disabled');
-                _thisfileName = $(this).attr('img_name');
+                _thisfileName = $(this).attr('cropped_image');
                 _icropimgkey = $(this).attr('imgkey');
                 $("#cuimagekey").val(_icropimgkey);
                 $('.display_avatar').attr('src', tempImagePath + _thisfileName);

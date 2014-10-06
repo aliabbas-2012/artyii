@@ -352,13 +352,15 @@
             $('#w').val('');
             $('#h').val('');
             $("#savecrop").removeAttr('disabled', 'disabled');
-            _thisfileName = $(this).attr('img_name');
+            _thisfileName = $(this).attr('cropped_image');
             _icropimgkey = $(this).attr('imgkey');
             $("#cuimagekey").val(_icropimgkey);
             $('.display_avatar').attr('src', tempImagePath + _thisfileName);
             $.colorbox({
                 inline: true,
                 href: "#inline_content",
+                height:"auto",
+                width:"auto",
                 onComplete: function() {
                     uimagekey = _thisfileName;
                     $('.display_avatar').Jcrop({

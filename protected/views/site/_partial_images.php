@@ -37,7 +37,6 @@
                 </div>
             </div>
             <?php
-      
             if (isset($models) && !empty($models) && count($models) > 0) {
                 ?>
 
@@ -53,10 +52,10 @@
                         <div style="padding:15px;width:24%;float:left;">
                             <img alter="collage" style="width:170px;height:120px;" class="cropper" src="<?php echo Yii::app()->request->baseUrl; ?>/collage/<?php echo $thumb_image; ?>"></td>
                             <br>
-                            <!--<a class="scale_img" img_name="<?php echo $models[$i]->main_img; ?>" imgkey="<?php echo $models[$i]->img_key; ?>" style="color:red;" href="javascript://">Scale |</a>-->
+        <!--                            <a class="scale_img" img_name="<?php echo $models[$i]->main_img; ?>" imgkey="<?php echo $models[$i]->img_key; ?>" style="color:red;" href="javascript://">Scale |</a>-->
                             <a class="delete_img" imgkey="<?php echo $models[$i]->img_key; ?>" style="color:red;" href="javascript://">Delete</a>
                             <!--<a style="display:none;" class="make_bg" img_name="<?php echo $models[$i]->main_img; ?>" imgkey="<?php echo $models[$i]->img_key; ?>" style="color:red;" href="javascript://">| Background</a>-->
-                            <!--<a class="edit_img" img_name="<?php echo $models[$i]->main_img; ?>" imgkey="<?php echo $models[$i]->img_key; ?>" style="color:red;" href="javascript://">| Crop</a>-->
+                            <a class="edit_img" cropped_image="<?php echo $models[$i]->cropped_img; ?>" img_name="<?php echo $models[$i]->main_img; ?>" imgkey="<?php echo $models[$i]->img_key; ?>" style="color:red;" href="javascript://">| Crop</a>
 
                         </div>
                     <?php } ?>
@@ -67,7 +66,6 @@
             <div style="margin-top:20px;">
 
                 <?php
-                
                 $this->widget('CLinkPager', array(
                     'pages' => $pages,
                 ))

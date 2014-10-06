@@ -221,7 +221,7 @@ class DTUploadedFile extends CUploadedFile {
          * */
     }
 
-    public static function rotateImage($pathToImage, $pathToThumbs, $angle) {
+    public static function rotateImage($pathToImage, $pathToThumbs, $rotate_angle) {
         $info = pathinfo($pathToImage);
         $name = str_replace("." . $info['extension'], "", $info['basename']);
 

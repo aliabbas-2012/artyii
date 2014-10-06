@@ -38,6 +38,7 @@ class DTUploadedFile extends CUploadedFile {
         }
         return $newPath . DIRECTORY_SEPARATOR;
     }
+
     /**
      *  to create recursive folder
      *  here images will be uploaded
@@ -55,7 +56,7 @@ class DTUploadedFile extends CUploadedFile {
             foreach ($array as $folder) {
                 $newPath.=DIRECTORY_SEPARATOR . $folder;
                 if (!is_dir($newPath)) {
-                   
+                    
                 }
             }
         } else {
@@ -125,7 +126,7 @@ class DTUploadedFile extends CUploadedFile {
      */
     public static function deleteExistingFile($file) {
         if (is_file($file)) {
-           
+
             unlink($file);
             return true;
         } else {
@@ -193,7 +194,7 @@ class DTUploadedFile extends CUploadedFile {
         }
         self::createImage($thumb, $pathToThumbs, $name, trim($info['extension']));
         imagedestroy($sourceImage);
-     
+
         return $thumb;
 
 
@@ -218,6 +219,39 @@ class DTUploadedFile extends CUploadedFile {
           // save thumbnail into a file
           self::createImage($tmp_img, $pathToThumbs, $name, trim($info['extension']));
          * */
+    }
+
+    public static function rotateImage($pathToImage, $pathToThumbs, $angle) {
+        $info = pathinfo($pathToImage);
+        $name = str_replace("." . $info['extension'], "", $info['basename']);
+
+        $size = getimagesize($pathToImage);
+
+
+
+        $type = isset($size['type']) ? $size['type'] : $size[2];
+
+        // Check support of file type
+        if (!(imagetypes() & $type)) {
+            // Server does not support file type
+            return false;
+        }
+
+        $source = self::imageCreateFrom($pathToImage, trim($info['extension'])) or notfound();
+        $transColor = imagecolorallocatealpha($source, 255, 255, 255, 127);
+
+        // $transparency = imagecolorallocatealpha($source, 0, 0, 0, 127);
+        $rotate = imagerotate($source, 360 - $rotate_angle, $transColor);
+        //imagealphablending($rotate, false);
+
+
+        imagesavealpha($rotate, TRUE);
+        //imagejpeg($rotate,$pathToThumbs.DIRECTORY_SEPARATOR.$info['basename']);
+        self::createImage($rotate, $pathToThumbs, $info['basename'], trim($info['extension']));
+
+        // imagejpeg($rotate);
+        imagedestroy($source);
+        imagedestroy($rotate);
     }
 
     /**

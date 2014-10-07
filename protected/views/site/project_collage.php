@@ -21,6 +21,7 @@
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/dnd.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/uploader.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/jquery-plugin.js"></script>
+<script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/jQueryRotate.js"></script>
 <script type="text/javascript">
 
             $(document).ready(function() {
@@ -241,7 +242,9 @@
             $("#cuimagekey").val(_icropimgkey);
             $('.display_avatar').attr('src', tempImagePath + _thisfileName);
             $.colorbox({
-            inline: true,
+            height:"auto",
+                    width:"auto",
+                    inline: true,
                     href: "#inline_content",
                     onComplete: function() {
                     uimagekey = _thisfileName;
@@ -276,7 +279,9 @@
             $("#cuimagekey").val(_icropimgkey);
             $('.display_avatar_scale').attr('src', tempImagePath + _thisfileName);
             $.colorbox({
-            inline: true,
+            height:"auto",
+                    width:"auto",
+                    inline: true,
                     href: "#inline_scale_content",
                     onComplete: function() {
 
@@ -324,7 +329,7 @@
                     if (woodenTable.get(0).complete) $(woodenTable).trigger("load");
             }
 
-    function set_storage_items(id, pos, update = false){
+    function set_storage_items(id, pos, update){
 
     var exists_img = localStorage.getItem(id);
             if (!exists_img || update) {
@@ -352,6 +357,7 @@
             $(document).mouseup(stopRotate);
             // Process each photo in turn...
             $('#lighttable img').each(function(index) {
+                
 
     // Set a random position and angle for this photo
     var left = Math.floor(Math.random() * 550 + 100);
@@ -360,7 +366,7 @@
             var pos = {'left': left, 'top': top, 'angle':angle}
 
     //Save current coordinates on load
-    pos = set_storage_items($(this).attr('id'), pos, false)
+    pos = set_storage_items($(this).attr('id'), pos, false);
 
             // Make the photo draggable
             $(this).draggable({
@@ -373,7 +379,7 @@
             // Show dropped position.
             var Stoppos = $(this).position();
                     pos = {'left': Stoppos.left, 'top': Stoppos.top}
-            pos = set_storage_items($(this).attr('id'), pos, true)
+            pos = set_storage_items($(this).attr('id'), pos, true);
 
             }
     });
@@ -384,9 +390,12 @@
             $(this).css('-webkit-transform', 'rotate(' + pos.angle + 'deg)');
             $(this).css('-o-transform', 'rotate(' + pos.angle + 'deg)');
             $(this).data('currentRotation', pos.angle * Math.PI / 180);
-            // Make the photo rotatable
-            $(this).mousedown(startRotate);
-            // Make the lightbox pop up when the photo is clicked
+            /*
+             * old code to rotate
+             // Make the photo rotatable
+             $(this).mousedown(startRotate);
+             // Make the lightbox pop up when the photo is clicked
+             */
 
 
             // Hide the photo for now, in case it hasn't finished loading
@@ -556,9 +565,26 @@
 
                         <div style="text-align:center;"><span class="step"><b style="font-size:30px;">Step 4</b></span> <span class="headingname">Create Your Collage</span></div>
                         <br>
-                        <div style="text-align: center;color:red;font-weight: bold;">
-                            *     To crop image, click the image below and use crop tool.<br>
-                            **    To rotate image, just make shift + hold click to rotate the image.<br>
+                        <!--                        <div style="text-align: center;color:red;font-weight: bold;">
+                                                    *     To crop image, click the image below and use crop tool.<br>
+                                                    **    To rotate image, just make shift + hold click to rotate the image.<br>
+                                                </div>-->
+                        <br>
+                        <div class="crop_center">
+                            <a href="javascript:void(0)" onclick="roatate_image()">Rotate to this Angle</a>
+                            &nbsp;
+                            <select id="angles">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                                <option value="45">45</option>
+                                <option value="75">75</option>
+                                <option value="90">90</option>
+                                <option value="120">120</option>
+                                <option value="150">150</option>
+                                <option value="180">180</option>
+                                <option value="360">360</option>
+                            </select>
                         </div>
                         <div id="wooden-table">
                             <?php if (isset($result_bg['cropped_img']) && !empty($result_bg['cropped_img'])) { ?>
@@ -588,7 +614,9 @@
                                     if (isset($imgmodel) && !empty($imgmodel) && count($imgmodel) > 0) {
                                         for ($i = 0; $i < count($imgmodel); $i++) {
                                             ?>
-                                            <img class="scale_img" img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" id="change_<?php echo $imgmodel[$i]->img_key; ?>" style="max-width: 300px;max-height: 300px;" src="<?php echo BASE_URL; ?>/collage/<?php echo $imgmodel[$i]->cropped_img; ?>" alt="alt" />
+                                            <img class="scale_img" 
+                                                 alt ="<?php echo $imgmodel[$i]->id; ?>"
+                                                 img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" id="change_<?php echo $imgmodel[$i]->img_key; ?>" style="max-width: 300px;max-height: 300px;" src="<?php echo BASE_URL; ?>/collage/<?php echo $imgmodel[$i]->cropped_img; ?>" />
                                             <?php
                                         }
                                     }
@@ -602,7 +630,6 @@
                                         $thumb_bg_image = $result_bg['cropped_img'];
                                         if (!empty($result_bg['thumb_image'])) {
                                             $thumb_bg_image = "thumbs/" . $result_bg['thumb_image'];
-                                            
                                         }
                                         ?>
                                         <div style="width:20%;float:left;">
@@ -617,7 +644,9 @@
                                                 } else {
                                                     echo "not_edit_img";
                                                 }
-                                                ?>" background="yes" img_name="<?php echo $result_bg['main_img']; ?>" imgkey="<?php echo $result_bg['img_key']; ?>" style="cursor:pointer; width: 192px;height: 200px;" src="<?php echo BASE_URL; ?>/collage/<?php echo $thumb_bg_image; ?>" alt="alt" />
+                                                ?>" background="yes" 
+                                                     cropped_image="<?php echo $result_bg['cropped_img']; ?>"
+                                                     img_name="<?php echo $result_bg['main_img']; ?>" imgkey="<?php echo $result_bg['img_key']; ?>" style="cursor:pointer; width: 192px;height: 200px;" src="<?php echo BASE_URL; ?>/collage/<?php echo $thumb_bg_image; ?>" alt="alt" />
                                             </div>
                                         </div>
 
@@ -641,7 +670,7 @@
                                                     IMAGE <?php echo $i + 1; ?>
                                                 </div>
                                                 <div style="border: 5px solid #fff;padding:10px;">
-                                                    <img background="no" class="edit_img" img_name="<?php echo $thumb_image; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="cursor:pointer; width: 192px;height: 200px;" src="<?php echo BASE_URL; ?>/collage/<?php echo $thumb_image; ?>" alt="alt" />
+                                                    <img background="no" class="edit_img" cropped_image="<?php echo $imgmodel[$i]->cropped_img; ?>" img_name="<?php echo $thumb_image; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="cursor:pointer; width: 192px;height: 200px;" src="<?php echo BASE_URL; ?>/collage/<?php echo $thumb_image; ?>" alt="alt" />
 
 
                                                     <br>
@@ -768,7 +797,9 @@
                 $("#cuimagekey").val(_icropimgkey);
                 $('.display_avatar').attr('src', tempImagePath + _thisfileName);
                 $.colorbox({
-                inline: true,
+                height:"auto",
+                        width:"auto",
+                        inline: true,
                         href: "#inline_content",
                         onComplete: function() {
                         uimagekey = _thisfileName;
@@ -801,8 +832,7 @@
                         $('#w').val(c.w);
                         $('#h').val(c.h);
                 }
-        ;
-    </script>
+        ;</script>
 
     <div style='display:none'>
         <div id='inline_content' style='padding:10px; background:#fff;'>
@@ -851,3 +881,29 @@
     </style>
 
 
+    <script>
+        function roatate_image() {
+            if ($("#lighttable img").length > 0) {
+
+                $("#lighttable img").rotate({
+                angle: 0,
+                        animateTo: parseInt(jQuery("#angles").val()),
+                        callback: rotation,
+                        easing: function(x, t, b, c, d) {        // t: current time, b: begInnIng value, c: change In value, d: duration
+                        return c * (t / d) + b;
+                        }
+                });
+            }
+            else {
+                alert("Please upload image first to rotate");
+            }
+        }
+        function rotation() {
+        $.post('<?php echo $this->createUrl("/upload/rotateImage"); ?>', {
+            angle: parseInt(jQuery("#angles").val()),
+                id: $("#lighttable img").attr("alt"),
+            }, function(data) {
+
+             }, "json");
+        }
+    </script>    

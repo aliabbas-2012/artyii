@@ -36,6 +36,8 @@
     var size_update_url = '<?php echo $this->createUrl('/upload/updateResize'); ?>';
     $(document).ready(function() {
         loadprojectimages();
+        collage.element_tob_rotate = ".image_part";
+        collage.initPhotos();
         collage.resizableBackgroundImage();
         var fileuploadedname = '';
         var errorHandler = function(event, id, fileName, reason) {

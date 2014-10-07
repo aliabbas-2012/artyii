@@ -11,6 +11,41 @@
  * @author Brain
  */
 class DTUploadedFile extends CUploadedFile {
+
+    /**
+     * set Image attribute
+     */
+    public static function setImageAttribute($model, $filePath) {
+        $size = @getimagesize($filePath);
+
+        if (!empty($size)) {
+            $model->dimension_type = 'portrait';
+            if ($size[0] >= $size[1]) {
+                $model->dimension_type = 'landscape';
+            }
+            $model->width = $size[0];
+            $model->height = $size[1];
+        }
+        return $model;
+    }
+
+    /**
+     * calculate image style
+     * @param type $current_Image
+     */
+    public static function calculateImageStyle($current_Image) {
+        $html_with_scale = '<div class="ui-resizable-handle ui-resizable-nw" id="nwgrip"></div>
+    <div class="ui-resizable-handle ui-resizable-ne" id="negrip"></div>
+    <div class="ui-resizable-handle ui-resizable-sw" id="swgrip"></div>
+    <div class="ui-resizable-handle ui-resizable-se" id="segrip"></div>';
+        $style = "style='width:" . $current_Image->width . "px;height:" . $current_Image->height . "px;'";
+        echo "<div class='image_part' $style>";
+
+        echo $cropped_image = CHtml::image(Yii::app()->baseUrl . "/collage/" . $current_Image->cropped_img, $current_Image->id,array("alt"=>$current_Image->id));
+        echo $html_with_scale;
+        echo "</div>";
+    }
+
     //put your code here
 
     /**

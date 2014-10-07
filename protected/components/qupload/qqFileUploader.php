@@ -67,7 +67,11 @@ class qqFileUploader {
         }
 
         $pathinfo = pathinfo($this->file->getName());
+
+
+
         $filename = $pathinfo['filename'];
+
         //$filename = md5(uniqid());
         $ext = $pathinfo['extension'];
 
@@ -85,7 +89,16 @@ class qqFileUploader {
 
         if ($this->file->save($uploadDirectory . $filename . '.' . $ext)) {
             $sFileName = $filename . '.' . $ext;
-            return array('success' => true, 'file_name' => $sFileName);
+            $size = getimagesize($uploadDirectory . $sFileName);
+            $dimension_type = 'portrait';
+            if ($size[0] >= $size[1]) {
+                $dimension_type = 'landscape';
+            }
+
+            return array('success' => true, 
+                'file_name' => $sFileName,
+                'width' => $size[0], 'height' => $size[1], 
+                'dimension_type' => $dimension_type);
         } else {
             return array('error' => 'Could not save uploaded file.' .
                 'The upload was cancelled, or server error encountered');

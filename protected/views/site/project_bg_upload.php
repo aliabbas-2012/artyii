@@ -21,8 +21,9 @@
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/dnd.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/uploader.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/jquery-plugin.js"></script>
-<script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/jQueryRotate.js"></script>
-<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+
+<script src="<?php echo Yii::app()->request->baseUrl; ?>/cdn/js/collage.js"></script>
+
 <script>
     var scalew = 0;
     var scaleh = 0;
@@ -32,9 +33,10 @@
     var imgkey = '';
     var ukey = '<?php echo $_GET["ukey"]; ?>';
     var imgpos = 5;
+    var size_update_url = '<?php echo $this->createUrl('/upload/updateResize'); ?>';
     $(document).ready(function() {
         loadprojectimages();
-
+        collage.resizableBackgroundImage();
         var fileuploadedname = '';
         var errorHandler = function(event, id, fileName, reason) {
             $("#btnSubmit").removeAttr('disabled', 'disabled');
@@ -61,6 +63,7 @@
                 onComplete: function(id, fileName, responseJSON) {
                     newimage = fileName;
                     imgpos = 5;
+                    collage.upload_img_obj = responseJSON;
                     loadprojectimages();
                 }
             }
@@ -109,18 +112,20 @@
         }, "json");
     }
     function make_background() {
-
+        collage.upload_img_obj
         $("#saveit").removeAttr('disabled', 'disabled');
         $.post('<?php echo $this->createUrl('/site/makebackground'); ?>', {
             imgkey: imgkey,
-            ukey: ukey
+            ukey: ukey,
+            image_properties: collage.upload_img_obj
         }, function(data) {
             data = JSON.parse(data);
-            console.log(data);
-            $(".image_container").html(data.cropped_image);
+            $(".image_container").html(collage.getBackgroundHTml(data));
+            collage.resizableBackgroundImage();
             $('.imgblock').html(data.dataset);
             $("#saveit").removeAttr('disabled', 'disabled');
             newimage = '';
+            collage.upload_img_obj = {}
             loadprojectimages();
         });
     }
@@ -353,30 +358,7 @@
         $('#h').val(c.h);
     }
 
-    function roatate_image() {
-        if ($(".image_container img").length > 0) {
 
-            $(".image_container img").rotate({
-                angle: 0,
-                animateTo: parseInt(jQuery("#angles").val()),
-                callback: rotation,
-                easing: function(x, t, b, c, d) {        // t: current time, b: begInnIng value, c: change In value, d: duration
-                    return c * (t / d) + b;
-                }
-            });
-        }
-        else {
-            alert("Please upload image first to rotate");
-        }
-    }
-    function rotation() {
-        $.post('<?php echo $this->createUrl("/upload/rotateImage"); ?>', {
-            angle: parseInt(jQuery("#angles").val()),
-            id: $(".image_container img").attr("alt"),
-        }, function(data) {
-
-        }, "json");
-    }
 </script>
 <script>
     var ukey = '<?php echo $_GET["ukey"]; ?>';
@@ -397,22 +379,7 @@
         <div class="col-lg-12 col-md-12 col-sm-12 imgchanel">
             <div style="text-align:center;"><span class="step"><b style="font-size:30px;">Step 2</b></span> <span class="headingname">Select Background Images</span></div>
             <br>
-            <div class="crop_center">
-                <a href="javascript:void(0)" onclick="roatate_image()">Rotate to this Angle</a>
-                &nbsp;
-                <select id="angles">
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="30">30</option>
-                    <option value="45">45</option>
-                    <option value="75">75</option>
-                    <option value="90">90</option>
-                    <option value="120">120</option>
-                    <option value="150">150</option>
-                    <option value="180">180</option>
-                    <option value="360">360</option>
-                </select>
-            </div>
+
             <br>
             <div class="wrapper-box">
                 <div class="wrapper-content">
@@ -420,17 +387,23 @@
                     <br/>
                     <div class="image_container">
                         <?php
-                        $criteria = new CDbCriteria();
-                        $criteria->addCondition("project_key = :project_key AND bg_img=1");
-                        $criteria->params = array("project_key" => $_GET['ukey']);
-                        $criteria->order = "id DESC";
-                        $current_Image = Images::model()->find($criteria);
+                        if (isset($_GET['ukey'])) {
+                            $criteria = new CDbCriteria();
+                            $criteria->addCondition("project_key = :project_key AND bg_img=1");
+                            $criteria->params = array("project_key" => $_GET['ukey']);
+                            $criteria->order = "id DESC";
+                            $current_Image = Images::model()->find($criteria);
 
-                        if ($current_Image = Images::model()->find($criteria)) {
-                            echo $cropped_image = CHtml::image(Yii::app()->baseUrl . "/collage/" . $current_Image->cropped_img, $current_Image->id);
-                        } else {
-                            $current_Image = Images::model()->findByPk($model->bg_id);
-                            echo $cropped_image = CHtml::image(Yii::app()->baseUrl . "/collage/" . $current_Image->cropped_img, $current_Image->id);
+                            if ($current_Image = Images::model()->find($criteria)) {
+                                echo "<h3>" . ucfirst($current_Image->dimension_type) . "</h3>";
+                                DTUploadedFile::calculateImageStyle($current_Image);
+                            } else {
+
+                                if ($current_Image = Images::model()->findByPk($model->bg_id)) {
+                                    echo "<h3>" . ucfirst($current_Image->dimension_type) . "</h3>";
+                                    DTUploadedFile::calculateImageStyle($current_Image);
+                                }
+                            }
                         }
                         ?>
                     </div>

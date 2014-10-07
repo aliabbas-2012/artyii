@@ -113,11 +113,17 @@ class SiteController extends AppController {
                     $savepath = Yii::getPathOfAlias('webroot') . '/collage/';
                     $new_filename = Helpers::getFilenameAsUnique($savepath, $_file_name);
                     $savepath = Yii::getPathOfAlias('webroot') . '/collage/' . $_file_name;
+
+
+
+
                     $thumb_name = Helpers::getFilenameAsUniqueThumb($savepath, $_file_name);
 
                     $newsavepath = Yii::getPathOfAlias('webroot') . '/collage/';
                     Helpers::fileRename($savepath, $new_filename, $newsavepath);
                     $logo_thumbnail = $new_filename;
+
+
 
 
                     $commandyes = Yii::app()->db->createCommand("SELECT * From tbl_images where project_key = '$_ukey' and img_serial = $_imgpos");
@@ -140,6 +146,8 @@ class SiteController extends AppController {
                     if ($_imgpos == 5) {
                         $model_img->bg_img = 1;
                     }
+                    //setting images size (width,height)
+                    $model_img = DTUploadedFile::setImageAttribute($model_img, $newsavepath . $new_filename);
                     //generate thumb here
 
                     $pathToThumbs = DTUploadedFile::creeatRecurSiveDirectories(array("thumbs"));
@@ -355,6 +363,7 @@ class SiteController extends AppController {
                 echo CJSON::encode(array(
                     'message' => $_upload_message,
                     'cc' => $result['bg_id'],
+                    'all_result' => $current_Image->attributes,
                     'cropped_image' => $cropped_image,
                     'dataset' => $_data,
                 ));

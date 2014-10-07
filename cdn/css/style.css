@@ -497,19 +497,19 @@ td.relative{
     padding:20px;
 }
 #sortable {
-list-style-type: none;
-margin: 0;
-padding: 0;
-width: 100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 #sortable li {
-margin: 3px 3px 3px 0;
-padding: 1px;
-float: left;
-width: 100px;
-height: 90px;
-font-size: 4em;
-text-align: center;
+    margin: 3px 3px 3px 0;
+    padding: 1px;
+    float: left;
+    width: 100px;
+    height: 90px;
+    font-size: 4em;
+    text-align: center;
 }
 
 
@@ -520,75 +520,75 @@ text-align: center;
 
 
 /* The div holding the wooden table img tag */
-    #wooden-table {
-        position: absolute;
-        left: -5000px;
-    }
+#wooden-table {
+    position: absolute;
+    left: -5000px;
+}
 
-    /* The light table itself */
-    #lighttable {
-        position: relative;
-        height: 600px;
-        padding: 70px;
-        margin: 0 auto;
-        border: 10px solid #fff;
-        display: none;
-        background-repeat-x: no-repeat;
-        background-repeat-y: no-repeat;
-    }
+/* The light table itself */
+#lighttable {
+    position: relative;
+    height: 600px;
+    padding: 70px;
+    margin: 0 auto;
+    border: 10px solid #fff;
+    display: none;
+    background-repeat-x: no-repeat;
+    background-repeat-y: no-repeat;
+}
 
-    /* Photos on the light table */
-    #lighttable img {
-        /*border: 10px solid #fff;*/
-        box-shadow: 0 0 1em rgba(0, 0, 0, 0.9);
-        -moz-box-shadow: 0 0 1em rgba(0, 0, 0, 0.9);
-        -webkit-box-shadow: 0 0 1em rgba(0, 0, 0, 0.9);
-        position: absolute;
-        left: -9999px;
-        top: -9999px;
-    }
+/* Photos on the light table */
+#lighttable img {
+    /*border: 10px solid #fff;*/
+    box-shadow: 0 0 1em rgba(0, 0, 0, 0.9);
+    -moz-box-shadow: 0 0 1em rgba(0, 0, 0, 0.9);
+    -webkit-box-shadow: 0 0 1em rgba(0, 0, 0, 0.9);
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+}
 
-    #lighttable img:hover {
-        cursor: pointer;
-    }
+#lighttable img:hover {
+    cursor: pointer;
+}
 
-    /* The description at the top of the page */
+/* The description at the top of the page */
 
-    #description {
-        padding: 10px 10px 5px 10px;
-        background: #111;
-        color: #fff;
-        width: 45em;
-        margin: 0 auto -5px auto;
-        text-align: center;
-    }
+#description {
+    padding: 10px 10px 5px 10px;
+    background: #111;
+    color: #fff;
+    width: 45em;
+    margin: 0 auto -5px auto;
+    text-align: center;
+}
 
-    #description h1 {
-        font-size: 14px;
-        line-height: 1.3em;
-    }
+#description h1 {
+    font-size: 14px;
+    line-height: 1.3em;
+}
 
-    #description a {
-        color: #bbf;
-    }
-    
-    .btn{
-        http://rammdesigns.com/frontend/
-    }
-    
-    span.step {
-  background: #5eb0f0;
-  border-radius: 2.8em;
-  -moz-border-radius: 2.8em;
-  -webkit-border-radius: 2.8em;
-  color: #ffffff;
-  display: inline-block;
-  font-weight: bold;
-  font-size: 20px;
-  line-height: 5.6em;
-  margin-right: 5px;
-  text-align: center;
-  width: 5.6em; 
+#description a {
+    color: #bbf;
+}
+
+.btn{
+    http://rammdesigns.com/frontend/
+}
+
+span.step {
+    background: #5eb0f0;
+    border-radius: 2.8em;
+    -moz-border-radius: 2.8em;
+    -webkit-border-radius: 2.8em;
+    color: #ffffff;
+    display: inline-block;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 5.6em;
+    margin-right: 5px;
+    text-align: center;
+    width: 5.6em; 
 }
 .headingname{
     color: #5eb0f0;
@@ -601,3 +601,27 @@ text-align: center;
     font-weight: bold;
     text-align: center;
 }
+h3 {
+    text-transform: capitalize;
+}
+
+/**------ image resize --***/
+.image_part {
+    border: 1px solid #000000;
+/*    overflow: hidden;*/
+}
+.image_part img {
+    height: 100%;
+    width: 100%;
+}
+#nwgrip, #negrip, #swgrip, #segrip, #ngrip, #egrip, #sgrip, #wgrip {
+    width: 10px;
+    height: 10px;
+    background-color: #ffffff;
+    border: 1px solid #000000;
+}
+#segrip {
+    right: -5px;
+    bottom: -5px;
+}
+

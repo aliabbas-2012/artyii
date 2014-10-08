@@ -433,7 +433,7 @@
                                                 'c-left' => $imgmodel[$i]->left,
                                                 'c-top' => $imgmodel[$i]->top,
                                             );
-                                           // echo CHtml::openTag("div", array("class" => "update"));
+                                            // echo CHtml::openTag("div", array("class" => "update"));
                                             ?>
                                             <?php
                                             echo CHtml::image($src, $imgmodel[$i]->id, $htmlOptions);
@@ -501,7 +501,7 @@
 
 
                                                     <br>
-                            <!--<a class="scale_img" img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="color:red;" href="javascript://">Scale |</a>-->
+                                                    <a class="scale_img" img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="color:red;" href="javascript://">Scale |</a>
                                                     <a class="edit_img" cropped_image="<?php echo $imgmodel[$i]->cropped_img; ?>" img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="color:red;" href="javascript://"> Crop</a>
 
 

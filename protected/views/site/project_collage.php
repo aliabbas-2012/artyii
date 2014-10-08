@@ -21,15 +21,19 @@
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/dnd.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/uploader.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/jquery-plugin.js"></script>
-<script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/jQueryRotate.js"></script>
+
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/cdn/js/collage.js"></script>
 <script type="text/javascript">
-
+    var size_update_url = '<?php echo $this->createUrl('/upload/updateResize'); ?>';
     $(document).ready(function() {
         loaddefaultprojectimages();
+        collage.element_tob_rotate = "#lighttable>div.update";
+        collage.start_set_pos = true;
+        collage.initPhotos();
+        collage.resizableCollage();
     });
     function loaddefaultprojectimages() {
-        $.post('<?php echo Yii::app()->request->baseUrl; ?>' + '/site/loaddefaultimages', {
+        $.post('<?php echo $this->createUrl('/site/loaddefaultimages'); ?>', {
             send: 'ok',
             ukey: ukey
         }, function(data) {
@@ -313,23 +317,7 @@
         $('#w').val(c.w);
         $('#h').val(c.h);
     }
-    ;
-    var newImageZIndex = 1; // To make sure newly-loaded images land on top of images on the table
-    var loaded = false; // Used to prevent initPhotos() running twice
-    var imageBeingRotated = false; // The DOM image currently being rotated (if any)
-    var mouseStartAngle = false; // The angle of the mouse relative to the image centre at the start of the rotation
-    var imageStartAngle = false; // The rotation angle of the image at the start of the rotation
 
-// When the document is ready, fire up the table!
-    $(init);
-// When the wooden table image has loaded, start bringing in the photos
-    function init() {
-        var woodenTable = $('#wooden-table img');
-        woodenTable.load(initPhotos);
-        // Hack for browsers that don't fire load events for cached images
-        if (woodenTable.get(0).complete)
-            $(woodenTable).trigger("load");
-    }
 
     function set_storage_items(id, pos, update) {
 
@@ -346,186 +334,7 @@
         return pos;
     }
 
-// Set up each of the photos on the table
 
-    function initPhotos() {
-
-        // (Ensure this function doesn't run twice)
-        if (loaded)
-            return;
-        loaded = true;
-        // The table image has loaded, so bring in the table
-        $('#lighttable').fadeIn('fast');
-        // Add an event handler to stop the rotation when the mouse button is released
-        $(document).mouseup(stopRotate);
-        // Process each photo in turn...
-        $('#lighttable img').each(function(index) {
-
-
-            // Set a random position and angle for this photo
-            var left = Math.floor(Math.random() * 550 + 100);
-            var top = Math.floor(Math.random() * 150 + 100);
-            var angle = Math.floor(Math.random() * 60 - 30);
-            var pos = {'left': left, 'top': top, 'angle': angle}
-
-            //Save current coordinates on load
-            pos = set_storage_items($(this).attr('id'), pos, false);
-
-            // Make the photo draggable
-            $(this).draggable({
-                containment: 'parent',
-                stack: '#lighttable img',
-                cursor: 'pointer',
-                start: dragStart,
-                stop: function(event, ui) {
-
-                    // Show dropped position.
-                    var Stoppos = $(this).position();
-                    pos = {'left': Stoppos.left, 'top': Stoppos.top}
-                    pos = set_storage_items($(this).attr('id'), pos, true);
-
-                }
-            });
-            $(this).css('left', pos.left + 'px');
-            $(this).css('top', pos.top + 'px');
-            $(this).css('transform', 'rotate(' + pos.angle + 'deg)');
-            $(this).css('-moz-transform', 'rotate(' + pos.angle + 'deg)');
-            $(this).css('-webkit-transform', 'rotate(' + pos.angle + 'deg)');
-            $(this).css('-o-transform', 'rotate(' + pos.angle + 'deg)');
-            $(this).data('currentRotation', pos.angle * Math.PI / 180);
-            /*
-             * old code to rotate
-             // Make the photo rotatable
-             $(this).mousedown(startRotate);
-             // Make the lightbox pop up when the photo is clicked
-             */
-
-
-            // Hide the photo for now, in case it hasn't finished loading
-            $(this).hide();
-            // When the photo image has loaded...
-            $(this).load(function() {
-
-                // (Ensure this function doesn't run twice)
-                if ($(this).data('loaded'))
-                    return;
-                $(this).data('loaded', true);
-                // Record the photo's true dimensions
-                var imgWidth = $(this).width();
-                var imgHeight = $(this).height();
-                // Make the photo bigger, so it looks like it's high above the table
-                $(this).css('width', imgWidth * 1.5);
-                $(this).css('height', imgHeight * 1.5);
-                // Make it completely transparent, ready for fading in
-                $(this).css('opacity', 0);
-                // Make sure its z-index is higher than the photos already on the table
-                $(this).css('z-index', newImageZIndex++);
-                // Gradually reduce the photo's dimensions to normal, fading it in as we go
-                $(this).animate({width: imgWidth, height: imgHeight, opacity: .95}, 1200);
-            });
-            // Hack for browsers that don't fire load events for cached images
-            if (this.complete)
-                $(this).trigger("load");
-        });
-    }
-
-// Prevent the image being dragged if it's already being rotated
-
-    function dragStart(e, ui) {
-        if (imageBeingRotated)
-            return false;
-    }
-
-// Open the lightbox only if an image isn't currently being rotated
-
-
-
-// Start rotating an image
-
-    function startRotate(e) {
-
-        // Exit if the shift key wasn't held down when the mouse button was pressed
-        if (!e.shiftKey)
-            return;
-        // Track the image that we're going to rotate
-        imageBeingRotated = this;
-        // Store the angle of the mouse at the start of the rotation, relative to the image centre
-        var imageCentre = getImageCentre(imageBeingRotated);
-        var mouseStartXFromCentre = e.pageX - imageCentre[0];
-        var mouseStartYFromCentre = e.pageY - imageCentre[1];
-        mouseStartAngle = Math.atan2(mouseStartYFromCentre, mouseStartXFromCentre);
-        // Store the current rotation angle of the image at the start of the rotation
-        imageStartAngle = $(imageBeingRotated).data('currentRotation');
-        // Set up an event handler to rotate the image as the mouse is moved
-        $(document).mousemove(rotateImage);
-        return false;
-    }
-
-// Stop rotating an image
-
-    function stopRotate(e) {
-
-        // Exit if we're not rotating an image
-        if (!imageBeingRotated)
-            return;
-        // Remove the event handler that tracked mouse movements during the rotation
-        $(document).unbind('mousemove');
-        // Cancel the image rotation by setting imageBeingRotated back to false.
-        // Do this in a short while - after the click event has fired -
-        // to prevent the lightbox appearing once the Shift key is released.
-        setTimeout(function() {
-            imageBeingRotated = false;
-        }, 10);
-        return false;
-    }
-
-// Rotate image based on the current mouse position
-
-    function rotateImage(e) {
-
-        // Exit if we're not rotating an image
-        if (!e.shiftKey)
-            return;
-        if (!imageBeingRotated)
-            return;
-        // Calculate the new mouse angle relative to the image centre
-        var imageCentre = getImageCentre(imageBeingRotated);
-        var mouseXFromCentre = e.pageX - imageCentre[0];
-        var mouseYFromCentre = e.pageY - imageCentre[1];
-        var mouseAngle = Math.atan2(mouseYFromCentre, mouseXFromCentre);
-        // Calculate the new rotation angle for the image
-        var rotateAngle = mouseAngle - mouseStartAngle + imageStartAngle;
-        // Rotate the image to the new angle, and store the new angle
-        $(imageBeingRotated).css('transform', 'rotate(' + rotateAngle + 'rad)');
-        $(imageBeingRotated).css('-moz-transform', 'rotate(' + rotateAngle + 'rad)');
-        $(imageBeingRotated).css('-webkit-transform', 'rotate(' + rotateAngle + 'rad)');
-        $(imageBeingRotated).css('-o-transform', 'rotate(' + rotateAngle + 'rad)');
-        $(imageBeingRotated).data('currentRotation', rotateAngle);
-        return false;
-    }
-
-// Calculate the centre point of a given image
-
-    function getImageCentre(image) {
-
-        // Rotate the image to 0 radians
-        $(image).css('transform', 'rotate(0rad)');
-        $(image).css('-moz-transform', 'rotate(0rad)');
-        $(image).css('-webkit-transform', 'rotate(0rad)');
-        $(image).css('-o-transform', 'rotate(0rad)');
-        // Measure the image centre
-        var imageOffset = $(image).offset();
-        var imageCentreX = imageOffset.left + $(image).width() / 2;
-        var imageCentreY = imageOffset.top + $(image).height() / 2;
-        // Rotate the image back to its previous angle
-        var currentRotation = $(image).data('currentRotation');
-        $(imageBeingRotated).css('transform', 'rotate(' + currentRotation + 'rad)');
-        $(imageBeingRotated).css('-moz-transform', 'rotate(' + currentRotation + 'rad)');
-        $(imageBeingRotated).css('-webkit-transform', 'rotate(' + currentRotation + 'rad)');
-        $(imageBeingRotated).css('-o-transform', 'rotate(' + currentRotation + 'rad)');
-        // Return the calculated centre coordinates
-        return Array(imageCentreX, imageCentreY);
-    }
 
     var ukey = '<?php echo $_GET["ukey"]; ?>';
     var total = '<?php echo count($imgmodel); ?>';
@@ -584,37 +393,56 @@
                         <br>
 
                         <div id="wooden-table">
-<?php if (isset($result_bg['cropped_img']) && !empty($result_bg['cropped_img'])) { ?>
+                            <?php if (isset($result_bg['cropped_img']) && !empty($result_bg['cropped_img'])) { ?>
                                 <img  style="z-index: 90000;" src="<?php echo BASE_URL; ?>/collage/<?php echo $result_bg['cropped_img']; ?>" alt="Wooden table image" />
-                                 <?php } else { ?>
+                            <?php } else { ?>
                                 <img style="z-index: 90000;" src="<?php echo BASE_URL; ?>/images/light.jpg" alt="Wooden table image" />
-                                    <?php } ?>
+                            <?php } ?>
 
                         </div>
 
                         <div id="gameSection" style="padding-top:0px;">
-                                    <?php if (isset($result_bg['cropped_img']) && !empty($result_bg['cropped_img'])) { ?>
+                            <?php if (isset($result_bg['cropped_img']) && !empty($result_bg['cropped_img'])) { ?>
                                 <div id="lighttable"  class="change_<?php echo $result_bg['img_key']; ?> cropped_image_full"
                                      style="background-size: 100% 100%, auto; background-repeat-x: no-repeat;
                                      background-repeat-y: no-repeat;
                                      background: #eee url(<?php echo BASE_URL; ?>/collage/<?php echo $result_bg['cropped_img']; ?>);">
-                                    <?php } else { ?>
+                                 <?php } else { ?>
                                     <div id="lighttable" style="background: #eee url(<?php echo BASE_URL; ?>/images/light.jpg);">
-<?php } ?>
-<?php if (isset($imgmodel) && !empty($imgmodel) && count($imgmodel) > 0) { ?>
+                                    <?php } ?>
+                                    <?php if (isset($imgmodel) && !empty($imgmodel) && count($imgmodel) > 0) { ?>
 
-                                         <?php } else { ?>
+                                    <?php } else { ?>
                                         <div style="text-align: center;padding:20px;margin-top:100px;color:red;font-size:20px;font-weight:bold;background: white;"> You must have to upload at least one collage image which is not used as background image to proceed on. Please upload image.</div>
-                                         <?php } ?>
+                                    <?php } ?>
 
-<?php
-if (isset($imgmodel) && !empty($imgmodel) && count($imgmodel) > 0) {
-    for ($i = 0; $i < count($imgmodel); $i++) {
-        ?>
-                                            <img class="scale_img" 
-                                                 alt ="<?php echo $imgmodel[$i]->id; ?>"
-                                                 img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" id="change_<?php echo $imgmodel[$i]->img_key; ?>" style="max-width: 300px;max-height: 300px;" src="<?php echo BASE_URL; ?>/collage/<?php echo $imgmodel[$i]->cropped_img; ?>" />
+                                    <?php
+                                    if (isset($imgmodel) && !empty($imgmodel) && count($imgmodel) > 0) {
+                                        for ($i = 0; $i < count($imgmodel); $i++) {
+                                            $src = BASE_URL . "/collage/" . $imgmodel[$i]->cropped_img;
+                                            $htmlOptions = array(
+                                                "alt" => $imgmodel[$i]->id,
+                                                "img_name" => $imgmodel[$i]->main_img,
+                                                "imgkey" => $imgmodel[$i]->img_key,
+                                                "id" => "change_" . $imgmodel[$i]->img_key,
+                                                'angle' => $imgmodel[$i]->angle,
+                                                'c-width' => $imgmodel[$i]->width,
+                                                'c-height' => $imgmodel[$i]->height,
+                                                'c-left' => $imgmodel[$i]->left,
+                                                'c-top' => $imgmodel[$i]->top,
+                                            );
+                                            echo CHtml::openTag("div", array("class" => "update") + $htmlOptions);
+                                            ?>
                                             <?php
+                                            echo CHtml::image($src, $imgmodel[$i]->id, $htmlOptions);
+                                            ?>
+                                            <div class="ui-resizable-handle ui-resizable-nw" id="nwgrip"></div>
+                                            <div class="ui-resizable-handle ui-resizable-ne" id="negrip"></div>
+                                            <div class="ui-resizable-handle ui-resizable-sw" id="swgrip"></div>
+                                            <div class="ui-resizable-handle ui-resizable-se" id="segrip"></div>
+
+                                            <?php
+                                            echo CHtml::closeTag("div");
                                         }
                                     }
                                     ?>
@@ -622,13 +450,13 @@ if (isset($imgmodel) && !empty($imgmodel) && count($imgmodel) > 0) {
                                 </div>
                                 <div style="width:100%;margin-top:60px;">
 
-<?php if (isset($result_bg['cropped_img']) && !empty($result_bg['cropped_img'])) { ?>
-    <?php
-    $thumb_bg_image = $result_bg['cropped_img'];
-    if (!empty($result_bg['thumb_image'])) {
-        $thumb_bg_image = "thumbs/" . $result_bg['thumb_image'];
-    }
-    ?>
+                                    <?php if (isset($result_bg['cropped_img']) && !empty($result_bg['cropped_img'])) { ?>
+                                        <?php
+                                        $thumb_bg_image = $result_bg['cropped_img'];
+                                        if (!empty($result_bg['thumb_image'])) {
+                                            $thumb_bg_image = "thumbs/" . $result_bg['thumb_image'];
+                                        }
+                                        ?>
                                         <div style="width:20%;float:left;">
 
                                             <div style="color:white; padding:20px;background:#0396e3;border: 5px solid #CCC">
@@ -636,12 +464,12 @@ if (isset($imgmodel) && !empty($imgmodel) && count($imgmodel) > 0) {
                                             </div>
                                             <div style="border: 5px solid #fff;padding:10px;">
                                                 <img class="<?php
-                                            if ($result_bg['project_key'] != "XXX") {
-                                                echo "edit_img";
-                                            } else {
-                                                echo "not_edit_img";
-                                            }
-    ?>" background="yes" 
+                                                if ($result_bg['project_key'] != "XXX") {
+                                                    echo "edit_img";
+                                                } else {
+                                                    echo "not_edit_img";
+                                                }
+                                                ?>" background="yes" 
                                                      cropped_image="<?php echo $result_bg['cropped_img']; ?>"
                                                      img_name="<?php echo $result_bg['main_img']; ?>" imgkey="<?php echo $result_bg['img_key']; ?>" style="cursor:pointer; width: 192px;height: 200px;" src="<?php echo BASE_URL; ?>/collage/<?php echo $thumb_bg_image; ?>" alt="alt" />
                                             </div>
@@ -650,17 +478,17 @@ if (isset($imgmodel) && !empty($imgmodel) && count($imgmodel) > 0) {
 
                                     <?php } else { ?>
 
-<?php } ?>
+                                    <?php } ?>
 
-<?php
+                                    <?php
 //load model images here
-if (isset($imgmodel) && !empty($imgmodel) && count($imgmodel) > 0) {
-    for ($i = 0; $i < count($imgmodel); $i++) {
-        $thumb_image = $imgmodel[$i]->main_img;
-        if (!empty($imgmodel[$i]->thumb_image)) {
-            $thumb_image = "thumbs/" . $imgmodel[$i]->thumb_image;
-        }
-        ?>  
+                                    if (isset($imgmodel) && !empty($imgmodel) && count($imgmodel) > 0) {
+                                        for ($i = 0; $i < count($imgmodel); $i++) {
+                                            $thumb_image = $imgmodel[$i]->main_img;
+                                            if (!empty($imgmodel[$i]->thumb_image)) {
+                                                $thumb_image = "thumbs/" . $imgmodel[$i]->thumb_image;
+                                            }
+                                            ?>  
 
                                             <div style="width:20%;float:left;">
                                                 <div style="color:white; padding:20px;background:#0396e3;border: 5px solid #CCC">
@@ -677,10 +505,10 @@ if (isset($imgmodel) && !empty($imgmodel) && count($imgmodel) > 0) {
 
                                                 </div>
                                             </div>
-        <?php
-    }
-}
-?>
+                                            <?php
+                                        }
+                                    }
+                                    ?>
 
 
                                 </div>
@@ -695,9 +523,9 @@ if (isset($imgmodel) && !empty($imgmodel) && count($imgmodel) > 0) {
                                 </div>
                                 <div style="padding:20px;text-align: center;">
                                     <button style="cursor:pointer;" class="btn btn-success" id="backit" type="button">Back</button> &nbsp;&nbsp;&nbsp;
-<?php if (isset($imgmodel) && !empty($imgmodel) && count($imgmodel) > 0) { ?>
+                                    <?php if (isset($imgmodel) && !empty($imgmodel) && count($imgmodel) > 0) { ?>
                                         <button style="cursor:pointer;" class="btn btn-success" id="saveit" type="button">Submit</button>
-<?php } ?>
+                                    <?php } ?>
                                 </div>
                             </div>
                         </div>

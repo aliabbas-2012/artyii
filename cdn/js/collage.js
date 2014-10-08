@@ -29,6 +29,22 @@ var collage = {
             }
         });
     },
+    resizableCollage: function() {
+        
+         $(collage.element_tob_rotate).resizable({
+            stop: function(event, ui) {
+
+                //size_update_url
+                $.post(size_update_url, {
+                    id: ui.helper.attr("alt"),
+                    height: ui.size.height,
+                    width: ui.size.width,
+                }, function(data) {
+
+                });
+            }
+        });
+    },
     //drag and rotate
     newImageZIndex: 1, // To make sure newly-loaded images land on top of images on the table
     loaded: false, // Used to prevent initPhotos() running twice
@@ -36,6 +52,7 @@ var collage = {
     mouseStartAngle: false, // The angle of the mouse relative to the image centre at the start of the rotation
     imageStartAngle: false,
     element_tob_rotate: "#lighttable",
+    start_set_pos :false,
     initPhotos: function() {
         // (Ensure this function doesn't run twice)
         if (collage.loaded)
@@ -46,23 +63,39 @@ var collage = {
         // Add an event handler to stop the rotation when the mouse button is released
         $(document).mouseup(collage.stopRotate);
         // Process each photo in turn...
-        $(collage.element_tob_rotate + ' img').each(function(index) {
+        $(collage.element_tob_rotate).each(function(index) {
 
-            console.log(this);
+           
             // Set a random position and angle for this photo
             var left = Math.floor(Math.random() * 450 + 100);
             var top = Math.floor(Math.random() * 100 + 100);
             var angle = Math.floor(Math.random() * 60 - 30);
             var angle = 0;
 
+            if (collage.start_set_pos == true) {
+                $(this).css('left', left + 'px');
+                $(this).css('top', top + 'px');
+                $(this).css('position','inherit');
+//                collage.arrangeLeftParent(this,left);
+//                collage.arrangeTopParent(this,top);
+            }
+
             //setting positions
             if (typeof ($(this).attr("c-left")) != "undefined") {
                 left = parseFloat($(this).attr("c-left"));
-                //$(this).css('left', left + 'px');
+                $(this).css('left', left + 'px');
             }
             if (typeof ($(this).attr("c-top")) != "undefined") {
                 top = parseFloat($(this).attr("c-top"));
-                // $(this).css('top', top + 'px');
+                $(this).css('top', top + 'px');
+            }
+            if (typeof ($(this).attr("c-width")) != "undefined") {
+                cwidth = parseFloat($(this).attr("c-width"));
+                $(this).css('width', cwidth + 'px');
+            }
+            if (typeof ($(this).attr("c-height")) != "undefined") {
+                cheight = parseFloat($(this).attr("c-height"));
+                $(this).css('height', cheight + 'px');
             }
             if (typeof ($(this).attr("angle")) != "undefined") {
                 angle = parseFloat($(this).attr("angle"));
@@ -70,8 +103,7 @@ var collage = {
             }
 
 //            
-//            $(this).css('left', left + 'px');
-//            $(this).css('top', top + 'px');
+
 
             $(this).css('transform', 'rotate(' + angle + 'deg)');
             $(this).css('-moz-transform', 'rotate(' + angle + 'deg)');
@@ -97,6 +129,12 @@ var collage = {
                 if ($(this).data('loaded'))
                     return;
                 $(this).data('loaded', true);
+                
+                // Make it completely transparent, ready for fading in
+                $(this).css('opacity', 1);
+                // Make sure its z-index is higher than the photos already on the table
+                $(this).css('z-index', collage.newImageZIndex++);
+                // Gradually reduce the photo's dimensions to normal, fading it in as we go
                 // Record the photo's true dimensions
                 var imgWidth = $(this).width();
                 var imgHeight = $(this).height();
@@ -104,11 +142,7 @@ var collage = {
 //                // Make the photo bigger, so it looks like it's high above the table
 //                $(this).css('width', imgWidth * 1.5);
 //                $(this).css('height', imgHeight * 1.5);
-//                // Make it completely transparent, ready for fading in
-//                $(this).css('opacity', 0);
-//                // Make sure its z-index is higher than the photos already on the table
-//                $(this).css('z-index', collage.newImageZIndex++);
-//                // Gradually reduce the photo's dimensions to normal, fading it in as we go
+
 //                $(this).animate({width: imgWidth, height: imgHeight, opacity: .95}, 1200);
 
 
@@ -127,8 +161,10 @@ var collage = {
     dragStop: function(e, ui) {
         //size_update_url
 
+        id = ui.helper.attr("alt");
+
         $.post(size_update_url, {
-            id: ui.helper[0].alt,
+            id: id,
             left: ui.position.left,
             top: ui.position.top,
         }, function(data) {
@@ -225,7 +261,7 @@ var collage = {
         $(collage.imageBeingRotated).css('-webkit-transform', 'rotate(' + rotateAngle + 'rad)');
         $(collage.imageBeingRotated).css('-o-transform', 'rotate(' + rotateAngle + 'rad)');
         $(collage.imageBeingRotated).data('currentRotation', rotateAngle);
-        console.log(rotateAngle);
+       
         return false;
     },
     // Calculate the centre point of a given image
@@ -252,6 +288,13 @@ var collage = {
 
         // Return the calculated centre coordinates
         return Array(imageCentreX, imageCentreY);
+    },
+    arrangeLeftParent : function(obj,left){
+        $(obj).parent().css('left', left + 'px');
+    },
+    
+    arrangeTopParent : function(obj,top){
+        $(obj).parent().css('top', top + 'px');
     }
 
 }

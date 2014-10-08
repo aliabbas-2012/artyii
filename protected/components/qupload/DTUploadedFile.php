@@ -39,7 +39,8 @@ class DTUploadedFile extends CUploadedFile {
     <div class="ui-resizable-handle ui-resizable-sw" id="swgrip"></div>
     <div class="ui-resizable-handle ui-resizable-se" id="segrip"></div>';
         $style = "style='width:" . $current_Image->width . "px;height:" . $current_Image->height . "px;'";
-        echo "<div class='image_part' $style>";
+       
+        
         $htmlOptions = array("alt" => $current_Image->id, 'angle' => $current_Image->angle,
             'c-width' => $current_Image->width,
             'c-height' => $current_Image->height,
@@ -48,10 +49,11 @@ class DTUploadedFile extends CUploadedFile {
         );
         
         
-
+        echo CHtml::openTag("div",$htmlOptions+array("class"=>'image_part','style'=>$style));
         echo $cropped_image = CHtml::image(Yii::app()->baseUrl . "/collage/" . $current_Image->cropped_img, $current_Image->id, $htmlOptions);
         echo $html_with_scale;
-        echo "</div>";
+        echo CHtml::closeTag("div");
+        
     }
 
     //put your code here

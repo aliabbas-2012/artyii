@@ -39,5 +39,15 @@ class Images extends CActiveRecord {
         $_project_model_imges = Images::model()->findAll($criteria);
         return array($_project_model_imges, $pages,$count);
     }
+    /**
+     * 
+     * @return type
+     */
+    public function beforeSave() {
+        if($this->isNewRecord){
+            
+        }
+        return parent::beforeSave();
+    }
 
 }

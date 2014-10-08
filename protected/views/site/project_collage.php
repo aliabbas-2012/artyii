@@ -457,7 +457,7 @@
                                             $thumb_bg_image = "thumbs/" . $result_bg['thumb_image'];
                                         }
                                         ?>
-                                        <div style="width:20%;float:left;">
+                                        <div style="width:25%;float:left;">
 
                                             <div style="color:white; padding:20px;background:#0396e3;border: 5px solid #CCC">
                                                 BACKGROUND IMAGE
@@ -490,7 +490,7 @@
                                             }
                                             ?>  
 
-                                            <div style="width:20%;float:left;">
+                                            <div style="width:25%;float:left;">
                                                 <div style="color:white; padding:20px;background:#0396e3;border: 5px solid #CCC">
                                                     IMAGE <?php echo $i + 1; ?>
                                                 </div>

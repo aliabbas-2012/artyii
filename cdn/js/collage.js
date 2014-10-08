@@ -1,19 +1,20 @@
 var collage = {
     upload_img_obj: {},
     getBackgroundHTml: function(data) {
-        html_with_scale:'<div class="ui-resizable-handle ui-resizable-nw" id="nwgrip"></div>' +
+        html_with_scale = '<div class="ui-resizable-handle ui-resizable-nw" id="nwgrip"></div>' +
                 '<div class="ui-resizable-handle ui-resizable-ne" id="negrip"></div>' +
                 '<div class="ui-resizable-handle ui-resizable-sw" id="swgrip"></div>' +
                 '<div class="ui-resizable-handle ui-resizable-se" id="segrip"></div>';
-        style:"style='width:" + data['all_result']['width'] + "px;height:" + data['all_result']['height'] + "px;'";
+        style = "style='width:" + data['all_result']['width'] + "px;height:" + data['all_result']['height'] + "px;'";
         html = "<h3>" + data['all_result']['dimension_type'] + "</h3>";
-        html += "<div class='image_part' '" + style + "'>";
+        html += "<div class='image_part' " + style + ">";
         html += data.cropped_image;
         html += html_with_scale;
         html += "</div>";
+        return html;
     },
     resizableBackgroundImage: function() {
-        id:$(".image_container>div img").attr("alt");
+        id = $(".image_container>div img").attr("alt");
         $(".image_container>div").resizable({
             stop: function(event, ui) {
 
@@ -45,7 +46,7 @@ var collage = {
         // Add an event handler to stop the rotation when the mouse button is released
         $(document).mouseup(collage.stopRotate);
         // Process each photo in turn...
-        $(collage.element_tob_rotate+' img').each(function(index) {
+        $(collage.element_tob_rotate + ' img').each(function(index) {
 
             // Set a random position and angle for this photo
             var left = Math.floor(Math.random() * 450 + 100);
@@ -54,7 +55,7 @@ var collage = {
 //            
 //            $(this).css('left', left + 'px');
 //            $(this).css('top', top + 'px');
-            
+
 //            $(this).css('transform', 'rotate(' + angle + 'deg)');
 //            $(this).css('-moz-transform', 'rotate(' + angle + 'deg)');
 //            $(this).css('-webkit-transform', 'rotate(' + angle + 'deg)');
@@ -62,7 +63,7 @@ var collage = {
             $(this).data('currentRotation', angle * Math.PI / 180);
 //            
             // Make the photo draggable
-            $(this).draggable({containment: 'parent', stack: collage.element_tob_rotate+' img', cursor: 'pointer', start: collage.dragStart});
+            $(this).draggable({containment: 'parent', stack: collage.element_tob_rotate + ' img', cursor: 'pointer', start: collage.dragStart});
             // Make the photo rotatable
             $(this).mousedown(collage.startRotate);
             // Make the lightbox pop up when the photo is clicked
@@ -70,7 +71,7 @@ var collage = {
                 collage.openLightbox(this)
             });
             // Hide the photo for now, in case it hasn't finished loading
-           // $(this).hide();
+            // $(this).hide();
             // When the photo image has loaded...
             $(this).load(function() {
 
@@ -81,7 +82,7 @@ var collage = {
                 // Record the photo's true dimensions
                 var imgWidth = $(this).width();
                 var imgHeight = $(this).height();
-                
+
 //                // Make the photo bigger, so it looks like it's high above the table
 //                $(this).css('width', imgWidth * 1.5);
 //                $(this).css('height', imgHeight * 1.5);
@@ -91,8 +92,8 @@ var collage = {
 //                $(this).css('z-index', collage.newImageZIndex++);
 //                // Gradually reduce the photo's dimensions to normal, fading it in as we go
 //                $(this).animate({width: imgWidth, height: imgHeight, opacity: .95}, 1200);
-                
-                
+
+
             });
             // Hack for browsers that don't fire load events for cached images
             if (this.complete)
@@ -120,7 +121,7 @@ var collage = {
         }
     },
     startRotate: function(e) {
-        
+
         // Exit if the shift key wasn't held down when the mouse button was pressed
         if (!e.shiftKey)
             return;

@@ -45,7 +45,17 @@ class UploadController extends Controller {
         $id = $_POST['id'];
         $width = $_POST['width'];
         $height = $_POST['height'];
-        $attributes = array("height" => $height, "width" => $width);
+        $dimension_type = 'portrait';
+        if ($width >= $height) {
+            $dimension_type = 'landscape';
+        }
+        $attributes = array("height" => $height, "width" => $width,'dimension_type'=>$dimension_type);
+        $image = Images::model()->findByPk($id);
+
+        $image_path = Yii::getPathOfAlias('webroot.collage') . "/" . $image->cropped_img;
+        $pathToThumbs = Yii::getPathOfAlias('webroot.collage.');
+
+        DTUploadedFile::createThumbs($image_path, $pathToThumbs, $width, $image->cropped_img, $height);
 
         Images::model()->updateByPk($id, $attributes);
     }

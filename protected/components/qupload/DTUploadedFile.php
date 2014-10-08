@@ -40,14 +40,14 @@ class DTUploadedFile extends CUploadedFile {
     <div class="ui-resizable-handle ui-resizable-se" id="segrip"></div>';
         $style = "style='width:" . $current_Image->width . "px;height:" . $current_Image->height . "px;'";
         echo "<div class='image_part' $style>";
-        $htmlOptions = array("alt"=>$current_Image->id,'angle'=>$current_Image->angle,
-            'c-width'=>$current_Image->width,
-            'c-height'=>$current_Image->height,
-            'c-left'=>$current_Image->left,
-            'c-top'=>$current_Image->top,
-            );
-        
-        echo $cropped_image = CHtml::image(Yii::app()->baseUrl . "/collage/" . $current_Image->cropped_img, $current_Image->id,$htmlOptions);
+        $htmlOptions = array("alt" => $current_Image->id, 'angle' => $current_Image->angle,
+            'c-width' => $current_Image->width,
+            'c-height' => $current_Image->height,
+            'c-left' => $current_Image->left,
+            'c-top' => $current_Image->top,
+        );
+
+        echo $cropped_image = CHtml::image(Yii::app()->baseUrl . "/collage/" . $current_Image->cropped_img, $current_Image->id, $htmlOptions);
         echo $html_with_scale;
         echo "</div>";
     }
@@ -181,7 +181,7 @@ class DTUploadedFile extends CUploadedFile {
      * @param type $pathToThumbs
      * @param type $thumbWidth
      */
-    public static function createThumbs($pathToImage, $pathToThumbs, $thumbWidth, $name) {
+    public static function createThumbs($pathToImage, $pathToThumbs, $thumbWidth, $name, $thumbHeight = null) {
         // open the directory
         // parse path for the extension
         $info = pathinfo($pathToImage);
@@ -200,33 +200,38 @@ class DTUploadedFile extends CUploadedFile {
         $width = isset($size['width']) ? $size['width'] : $size[0];
         $height = isset($size['height']) ? $size['height'] : $size[1];
 
-        // Calculate aspect ratio
-        $wRatio = $maxSize / $width;
-        $hRatio = $maxSize / $height;
-
-        // Using imagecreatefromstring will automatically detect the file type
         $sourceImage = imagecreatefromstring(file_get_contents($pathToImage));
+        
+        if ($thumbHeight == null) {
+            // Calculate aspect ratio
+            $wRatio = $maxSize / $width;
+            $hRatio = $maxSize / $height;
 
-        // Calculate a proportional width and height no larger than the max size.
-        if (($width <= $maxSize) && ($height <= $maxSize)) {
-            // Input is smaller than thumbnail, do nothing
-            return $sourceImage;
-        } elseif (($wRatio * $height) < $maxSize) {
-            // Image is horizontal
-            $tHeight = ceil($wRatio * $height);
-            $tWidth = $maxSize;
+            // Using imagecreatefromstring will automatically detect the file type
+            // Calculate a proportional width and height no larger than the max size.
+            if (($width <= $maxSize) && ($height <= $maxSize)) {
+                // Input is smaller than thumbnail, do nothing
+                return $sourceImage;
+            } elseif (($wRatio * $height) < $maxSize) {
+                // Image is horizontal
+                $tHeight = ceil($wRatio * $height);
+                $tWidth = $maxSize;
+            } else {
+                // Image is vertical
+                $tWidth = ceil($hRatio * $width);
+                $tHeight = $maxSize;
+            }
         } else {
-            // Image is vertical
-            $tWidth = ceil($hRatio * $width);
-            $tHeight = $maxSize;
+            $tHeight = $thumbHeight;
+            $tWidth = $thumbWidth;
         }
-
         $thumb = imagecreatetruecolor($tWidth, $tHeight);
 
         if ($sourceImage === false) {
             // Could not load image
             return false;
         }
+
 
         // Copy resampled makes a smooth thumbnail
         imagecopyresampled($thumb, $sourceImage, 0, 0, 0, 0, $tWidth, $tHeight, $width, $height);

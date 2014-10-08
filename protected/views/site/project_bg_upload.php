@@ -124,6 +124,7 @@
             data = JSON.parse(data);
             $(".image_container").html(collage.getBackgroundHTml(data));
             collage.resizableBackgroundImage();
+            collage.initPhotos();
             $('.imgblock').html(data.dataset);
             $("#saveit").removeAttr('disabled', 'disabled');
             newimage = '';

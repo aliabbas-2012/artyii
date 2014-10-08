@@ -40,8 +40,14 @@ class DTUploadedFile extends CUploadedFile {
     <div class="ui-resizable-handle ui-resizable-se" id="segrip"></div>';
         $style = "style='width:" . $current_Image->width . "px;height:" . $current_Image->height . "px;'";
         echo "<div class='image_part' $style>";
-
-        echo $cropped_image = CHtml::image(Yii::app()->baseUrl . "/collage/" . $current_Image->cropped_img, $current_Image->id,array("alt"=>$current_Image->id));
+        $htmlOptions = array("alt"=>$current_Image->id,'angle'=>$current_Image->angle,
+            'c-width'=>$current_Image->width,
+            'c-height'=>$current_Image->height,
+            'c-left'=>$current_Image->left,
+            'c-top'=>$current_Image->top,
+            );
+        
+        echo $cropped_image = CHtml::image(Yii::app()->baseUrl . "/collage/" . $current_Image->cropped_img, $current_Image->id,$htmlOptions);
         echo $html_with_scale;
         echo "</div>";
     }

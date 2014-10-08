@@ -101,6 +101,7 @@ var collage = {
     },
     // Prevent the image being dragged if it's already being rotated
     dragStart: function(e, ui) {
+        console.log(ui);
         if (collage.imageBeingRotated)
             return false;
     },

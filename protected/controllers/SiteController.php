@@ -359,7 +359,13 @@ class SiteController extends AppController {
 
                 //get background image name
                 $current_Image = Images::model()->findByPk($result['bg_id']);
-                $cropped_image = CHtml::image(Yii::app()->baseUrl . "/collage/" . $current_Image->cropped_img, $result['bg_id']);
+                $htmlOptions = array("alt" => $current_Image->id, 'angle' => $current_Image->angle,
+                    'c-width' => $current_Image->width,
+                    'c-height' => $current_Image->height,
+                    'c-left' => $current_Image->left,
+                    'c-top' => $current_Image->top,
+                );
+                $cropped_image = CHtml::image(Yii::app()->baseUrl . "/collage/" . $current_Image->cropped_img, $result['bg_id'],$htmlOptions);
                 echo CJSON::encode(array(
                     'message' => $_upload_message,
                     'cc' => $result['bg_id'],

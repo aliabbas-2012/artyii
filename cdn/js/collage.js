@@ -48,22 +48,40 @@ var collage = {
         // Process each photo in turn...
         $(collage.element_tob_rotate + ' img').each(function(index) {
 
+            console.log(this);
             // Set a random position and angle for this photo
             var left = Math.floor(Math.random() * 450 + 100);
             var top = Math.floor(Math.random() * 100 + 100);
             var angle = Math.floor(Math.random() * 60 - 30);
+            var angle = 0;
+
+            //setting positions
+            if (typeof ($(this).attr("c-left")) != "undefined") {
+                left = parseFloat($(this).attr("c-left"));
+                //$(this).css('left', left + 'px');
+            }
+            if (typeof ($(this).attr("c-top")) != "undefined") {
+                top = parseFloat($(this).attr("c-top"));
+                // $(this).css('top', top + 'px');
+            }
+            if (typeof ($(this).attr("angle")) != "undefined") {
+                angle = parseFloat($(this).attr("angle"));
+                $(this).data('currentRotation', angle);
+            }
+
 //            
 //            $(this).css('left', left + 'px');
 //            $(this).css('top', top + 'px');
 
-//            $(this).css('transform', 'rotate(' + angle + 'deg)');
-//            $(this).css('-moz-transform', 'rotate(' + angle + 'deg)');
-//            $(this).css('-webkit-transform', 'rotate(' + angle + 'deg)');
-//            $(this).css('-o-transform', 'rotate(' + angle + 'deg)');
+            $(this).css('transform', 'rotate(' + angle + 'deg)');
+            $(this).css('-moz-transform', 'rotate(' + angle + 'deg)');
+            $(this).css('-webkit-transform', 'rotate(' + angle + 'deg)');
+            $(this).css('-o-transform', 'rotate(' + angle + 'deg)');
             $(this).data('currentRotation', angle * Math.PI / 180);
 //            
             // Make the photo draggable
-            $(this).draggable({containment: 'parent', stack: collage.element_tob_rotate + ' img', cursor: 'pointer', start: collage.dragStart});
+            $(this).draggable({containment: 'parent', stack: collage.element_tob_rotate + ' img',
+                cursor: 'pointer', start: collage.dragStart, stop: collage.dragStop});
             // Make the photo rotatable
             $(this).mousedown(collage.startRotate);
             // Make the lightbox pop up when the photo is clicked
@@ -102,7 +120,20 @@ var collage = {
     },
     // Prevent the image being dragged if it's already being rotated
     dragStart: function(e, ui) {
-        console.log(ui);
+
+        if (collage.imageBeingRotated)
+            return false;
+    },
+    dragStop: function(e, ui) {
+        //size_update_url
+
+        $.post(size_update_url, {
+            id: ui.helper[0].alt,
+            left: ui.position.left,
+            top: ui.position.top,
+        }, function(data) {
+
+        });
         if (collage.imageBeingRotated)
             return false;
     },
@@ -112,7 +143,7 @@ var collage = {
             imageFile = imageFile.replace(/^slides\//, "")
             var imageCaption = $(image).attr('alt');
             $.colorbox({
-                href: 'slides-big/' + imageFile,
+                href: imageFile,
                 maxWidth: "900px",
                 maxHeight: "600px",
                 title: imageCaption
@@ -158,8 +189,17 @@ var collage = {
         // Do this in a short while - after the click event has fired -
         // to prevent the lightbox appearing once the Shift key is released.
         setTimeout(function() {
+            $.post(size_update_url, {
+                id: $(collage.imageBeingRotated).attr("alt"),
+                angle: $(collage.imageBeingRotated).data('currentRotation') * (180 / Math.PI),
+            }, function(data) {
+
+            });
             collage.imageBeingRotated = false;
+
         }, 10);
+
+
         return false;
     },
     rotateImage: function(e) {
@@ -185,6 +225,7 @@ var collage = {
         $(collage.imageBeingRotated).css('-webkit-transform', 'rotate(' + rotateAngle + 'rad)');
         $(collage.imageBeingRotated).css('-o-transform', 'rotate(' + rotateAngle + 'rad)');
         $(collage.imageBeingRotated).data('currentRotation', rotateAngle);
+        console.log(rotateAngle);
         return false;
     },
     // Calculate the centre point of a given image

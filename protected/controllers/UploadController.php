@@ -43,20 +43,29 @@ class UploadController extends Controller {
      */
     public function actionUpdateResize() {
         $id = $_POST['id'];
-        $width = $_POST['width'];
-        $height = $_POST['height'];
-        $dimension_type = 'portrait';
-        if ($width >= $height) {
-            $dimension_type = 'landscape';
-        }
-        $attributes = array("height" => $height, "width" => $width,'dimension_type'=>$dimension_type);
+        $attributes = array();
         $image = Images::model()->findByPk($id);
+        if (isset($_POST['width']) && isset($_POST['height'])) {
+            $width = $_POST['width'];
+            $height = $_POST['height'];
+            $dimension_type = 'portrait';
+            if ($width >= $height) {
+                $dimension_type = 'landscape';
+            }
+            $attributes = array("height" => $height, "width" => $width, 'dimension_type' => $dimension_type);
+            
 
-        $image_path = Yii::getPathOfAlias('webroot.collage') . "/" . $image->cropped_img;
-        $pathToThumbs = Yii::getPathOfAlias('webroot.collage.');
+            $image_path = Yii::getPathOfAlias('webroot.collage') . "/" . $image->cropped_img;
+            $pathToThumbs = Yii::getPathOfAlias('webroot.collage.');
 
-        DTUploadedFile::createThumbs($image_path, $pathToThumbs, $width, $image->cropped_img, $height);
-
+            DTUploadedFile::createThumbs($image_path, $pathToThumbs, $width, $image->cropped_img, $height);
+        }
+        else if (isset($_POST['left']) && isset($_POST['top'])) {
+             $attributes = array("left" => $_POST['left'], "top" => $_POST['top']);
+        }
+        else if (isset($_POST['angle'])) {
+             $attributes = array("angle" =>$_POST['angle']);
+        }
         Images::model()->updateByPk($id, $attributes);
     }
 

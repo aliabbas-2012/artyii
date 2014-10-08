@@ -46,6 +46,8 @@ class DTUploadedFile extends CUploadedFile {
             'c-left' => $current_Image->left,
             'c-top' => $current_Image->top,
         );
+        
+        
 
         echo $cropped_image = CHtml::image(Yii::app()->baseUrl . "/collage/" . $current_Image->cropped_img, $current_Image->id, $htmlOptions);
         echo $html_with_scale;

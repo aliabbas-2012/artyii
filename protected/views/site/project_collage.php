@@ -27,10 +27,11 @@
     var size_update_url = '<?php echo $this->createUrl('/upload/updateResize'); ?>';
     $(document).ready(function() {
         loaddefaultprojectimages();
-        collage.element_tob_rotate = "#lighttable>div.update";
+        collage.element_tob_rotate = "#lighttable img";
         collage.start_set_pos = true;
+
+        //collage.resizableCollage();
         collage.initPhotos();
-        collage.resizableCollage();
     });
     function loaddefaultprojectimages() {
         $.post('<?php echo $this->createUrl('/site/loaddefaultimages'); ?>', {
@@ -346,13 +347,14 @@
             return false;
         } else {
             html2canvas([document.getElementById('lighttable')], {
+                useCORS: true,
                 onrendered: function(canvas)
                 {
-                    var img = canvas.toDataURL();
+                    var img = canvas.toDataURL('image/png');
                     $.post('<?php echo BASE_URL; ?>/' + "site/saveimg", {data: img, ukey: ukey, notes: note}, function(file) {
                         if (file != '') {
                             localStorage.clear();
-                            window.location.href = '<?php echo BASE_URL; ?>/' + "site/success/?ukey=" + ukey
+                            // window.location.href = '<?php echo BASE_URL; ?>/' + "site/success/?ukey=" + ukey
                         }
 
                     });
@@ -431,7 +433,7 @@
                                                 'c-left' => $imgmodel[$i]->left,
                                                 'c-top' => $imgmodel[$i]->top,
                                             );
-                                            echo CHtml::openTag("div", array("class" => "update") + $htmlOptions);
+                                           // echo CHtml::openTag("div", array("class" => "update"));
                                             ?>
                                             <?php
                                             echo CHtml::image($src, $imgmodel[$i]->id, $htmlOptions);
@@ -442,7 +444,7 @@
                                             <div class="ui-resizable-handle ui-resizable-se" id="segrip"></div>
 
                                             <?php
-                                            echo CHtml::closeTag("div");
+                                            //echo CHtml::closeTag("div");
                                         }
                                     }
                                     ?>

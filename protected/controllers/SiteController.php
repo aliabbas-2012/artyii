@@ -101,7 +101,7 @@ class SiteController extends AppController {
             $_ukey = $_POST['ukey'];
             $_file_name = $_POST['newimage'];
             $_imgpos = $_POST['imgpos'];
-      
+
 
             $_owner_id = Yii::app()->user->getId();
             $sql = "SELECT * From tbl_projects where owner_id = '$_owner_id' and mode = 0 and ukey='$_ukey'";
@@ -109,10 +109,10 @@ class SiteController extends AppController {
             $result = $command->queryRow();
             $_upload_message = "";
             $_done = false;
-       
+
             if (isset($result['ukey'])) {
                 $_project_id = $result['id'];
-            
+
                 if (!empty($_file_name)) {
                     $savepath = Yii::getPathOfAlias('webroot') . '/collage/';
                     $new_filename = Helpers::getFilenameAsUnique($savepath, $_file_name);
@@ -153,13 +153,12 @@ class SiteController extends AppController {
                     //setting images size (width,height)
                     $model_img = DTUploadedFile::setImageAttribute($model_img, $newsavepath . $new_filename);
                     //generate thumb here
-      
-                 
+
+
 
                     $pathToThumbs = DTUploadedFile::creeatRecurSiveDirectories(array("thumbs"));
                     DTUploadedFile::createThumbs($savepath, $pathToThumbs, 180, $thumb_name);
                     $model_img->save();
-                    
                 }
                 $_retArray = '';
                 $criteria = new CDbCriteria();
@@ -181,7 +180,7 @@ class SiteController extends AppController {
                 $pages->applyLimit($criteria);
                 $_project_bg_model_imges = Images::model()->findAll($criteria);
 
-           
+
                 $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_partial_bg_img_view'], array(
                     'models' => $_project_model_imges,
                     'modelsbg' => $_project_bg_model_imges,
@@ -484,8 +483,17 @@ class SiteController extends AppController {
                             imagejpeg($dst_r, $dsrc, $jpeg_quality);
                         }
 
-                        $command_update = Yii::app()->db->createCommand("UPDATE `tbl_images` SET `cropped_img` = '$new_crop_file_name' WHERE project_key='$_ukey' and img_key = '$_imgkey'");
-                        $command_update->execute();
+                        //get image model = 
+                        $criteria = new CDbCriteria();
+                        $criteria->addCondition("project_key='$_ukey' and img_key = '$_imgkey'");
+                        if ($updateImage = Images::model()->find($criteria)) {
+                            $file_path = Yii::getPathOfAlias('webroot') . '/collage/' . $new_crop_file_name;
+
+                            $updateImage = DTUploadedFile::setImageAttribute($updateImage, $file_path);
+                            $attributes = array("height" => $updateImage->height, "width" => $updateImage->width,
+                                'dimension_type' => $updateImage->dimension_type, 'cropped_img' => $new_crop_file_name);
+                            Images::model()->updateByPk($updateImage->id, $attributes);
+                        }
                     }
                 }
                 $criteria = new CDbCriteria();
@@ -683,8 +691,17 @@ class SiteController extends AppController {
                         }
 
 
-                        $command_update = Yii::app()->db->createCommand("UPDATE `tbl_images` SET `cropped_img` = '$new_crop_file_name' WHERE project_key='$_ukey' and img_key = '$_imgkey'");
-                        $command_update->execute();
+                        //get image model = 
+                        $criteria = new CDbCriteria();
+                        $criteria->addCondition("project_key='$_ukey' and img_key = '$_imgkey'");
+                        if ($updateImage = Images::model()->find($criteria)) {
+                            $file_path = Yii::getPathOfAlias('webroot') . '/collage/' . $new_crop_file_name;
+
+                            $updateImage = DTUploadedFile::setImageAttribute($updateImage, $file_path);
+                            $attributes = array("height" => $updateImage->height, "width" => $updateImage->width,
+                                'dimension_type' => $updateImage->dimension_type, 'cropped_img' => $new_crop_file_name);
+                            Images::model()->updateByPk($updateImage->id, $attributes);
+                        }
                     }
                 }
 
@@ -785,9 +802,17 @@ class SiteController extends AppController {
                             imagejpeg($dst_r, $dsrc, $jpeg_quality);
                         }
 
+                        //get image model = 
+                        $criteria = new CDbCriteria();
+                        $criteria->addCondition("project_key='$_ukey' and img_key = '$_imgkey'");
+                        if ($updateImage = Images::model()->find($criteria)) {
+                            $file_path = Yii::getPathOfAlias('webroot') . '/collage/' . $new_crop_file_name;
 
-                        $command_update = Yii::app()->db->createCommand("UPDATE `tbl_images` SET `cropped_img` = '$new_crop_file_name' WHERE project_key='$_ukey' and img_key = '$_imgkey'");
-                        $command_update->execute();
+                            $updateImage = DTUploadedFile::setImageAttribute($updateImage, $file_path);
+                            $attributes = array("height" => $updateImage->height, "width" => $updateImage->width,
+                                'dimension_type' => $updateImage->dimension_type, 'cropped_img' => $new_crop_file_name);
+                            Images::model()->updateByPk($updateImage->id, $attributes);
+                        }
                     }
                 }
 
@@ -1045,6 +1070,7 @@ class SiteController extends AppController {
     }
 
     public function actionSaveimg() {
+        
         if (!empty($_POST['ukey'])) {
             $_ukey = $_POST['ukey'];
             $_owner_id = Yii::app()->user->getId();
@@ -1055,11 +1081,12 @@ class SiteController extends AppController {
                 $data = $_POST['data'];
                 $file = md5(uniqid()) . '.png';
                 $uri = substr($data, strpos($data, ",") + 1);
-                file_put_contents('./finalimages/' . $file, base64_decode($uri));
+               $decoded = base64_decode(str_replace('data:image/png;base64,', '', $data));
+                file_put_contents('./finalimages/' . $file, $decoded);
                 $_id = $result['id'];
                 $model = $this->loadModel($_id);
                 $model->final_image_name = $file;
-                $model->mode = 1;
+                //$model->mode = 1;
                 $model->save();
                 echo $file;
             }

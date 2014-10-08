@@ -36,12 +36,13 @@ var collage = {
     },
     resizableCollage: function() {
         
-         $(collage.element_tob_rotate).resizable({
+         $(collage.element_tob_rotate+"").resizable({
             stop: function(event, ui) {
-
+                
+                object = collage.children(ui.helper);
                 //size_update_url
                 $.post(size_update_url, {
-                    id: ui.helper.attr("alt"),
+                    id: $(object).attr("alt"),
                     height: ui.size.height,
                     width: ui.size.width,
                 }, function(data) {
@@ -70,7 +71,7 @@ var collage = {
         // Process each photo in turn...
         $(collage.element_tob_rotate).each(function(index) {
 
-           
+            
             // Set a random position and angle for this photo
             var left = Math.floor(Math.random() * 450 + 100);
             var top = Math.floor(Math.random() * 100 + 100);
@@ -110,14 +111,14 @@ var collage = {
 //            
 
 
-            $(this).css('transform', 'rotate(' + angle + 'deg)');
-            $(this).css('-moz-transform', 'rotate(' + angle + 'deg)');
-            $(this).css('-webkit-transform', 'rotate(' + angle + 'deg)');
-            $(this).css('-o-transform', 'rotate(' + angle + 'deg)');
+            collage.children($(this)).css('transform', 'rotate(' + angle + 'deg)');
+            collage.children($(this)).css('-moz-transform', 'rotate(' + angle + 'deg)');
+            collage.children($(this)).css('-webkit-transform', 'rotate(' + angle + 'deg)');
+            collage.children($(this)).css('-o-transform', 'rotate(' + angle + 'deg)');
             $(this).data('currentRotation', angle * Math.PI / 180);
 //            
             // Make the photo draggable
-            $(this).draggable({containment: 'parent', stack: collage.element_tob_rotate + ' img',
+            $(this).draggable({containment: 'parent', stack: "#lighttable",
                 cursor: 'pointer', start: collage.dragStart, stop: collage.dragStop});
             // Make the photo rotatable
             $(this).mousedown(collage.startRotate);
@@ -261,10 +262,10 @@ var collage = {
         var rotateAngle = mouseAngle - collage.mouseStartAngle + collage.imageStartAngle;
 
         // Rotate the image to the new angle, and store the new angle
-        $(collage.imageBeingRotated).css('transform', 'rotate(' + rotateAngle + 'rad)');
-        $(collage.imageBeingRotated).css('-moz-transform', 'rotate(' + rotateAngle + 'rad)');
-        $(collage.imageBeingRotated).css('-webkit-transform', 'rotate(' + rotateAngle + 'rad)');
-        $(collage.imageBeingRotated).css('-o-transform', 'rotate(' + rotateAngle + 'rad)');
+        collage.children($(collage.imageBeingRotated)).css('transform', 'rotate(' + rotateAngle + 'rad)');
+        collage.children($(collage.imageBeingRotated)).css('-moz-transform', 'rotate(' + rotateAngle + 'rad)');
+        collage.children($(collage.imageBeingRotated)).css('-webkit-transform', 'rotate(' + rotateAngle + 'rad)');
+        collage.children($(collage.imageBeingRotated)).css('-o-transform', 'rotate(' + rotateAngle + 'rad)');
         $(collage.imageBeingRotated).data('currentRotation', rotateAngle);
        
         return false;
@@ -286,10 +287,10 @@ var collage = {
 
         // Rotate the image back to its previous angle
         var currentRotation = $(image).data('currentRotation');
-        $(collage.imageBeingRotated).css('transform', 'rotate(' + currentRotation + 'rad)');
-        $(collage.imageBeingRotated).css('-moz-transform', 'rotate(' + currentRotation + 'rad)');
-        $(collage.imageBeingRotated).css('-webkit-transform', 'rotate(' + currentRotation + 'rad)');
-        $(collage.imageBeingRotated).css('-o-transform', 'rotate(' + currentRotation + 'rad)');
+        collage.children($(collage.imageBeingRotated)).css('transform', 'rotate(' + currentRotation + 'rad)');
+        collage.children($(collage.imageBeingRotated)).css('-moz-transform', 'rotate(' + currentRotation + 'rad)');
+        collage.children($(collage.imageBeingRotated)).css('-webkit-transform', 'rotate(' + currentRotation + 'rad)');
+        collage.children($(collage.imageBeingRotated)).css('-o-transform', 'rotate(' + currentRotation + 'rad)');
 
         // Return the calculated centre coordinates
         return Array(imageCentreX, imageCentreY);
@@ -300,6 +301,10 @@ var collage = {
     
     arrangeTopParent : function(obj,top){
         $(obj).parent().css('top', top + 'px');
+    },
+    children:function(obj){
+//        obj = $(obj).children().eq(0);
+        return obj;
     }
 
 }

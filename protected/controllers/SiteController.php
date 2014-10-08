@@ -101,14 +101,18 @@ class SiteController extends AppController {
             $_ukey = $_POST['ukey'];
             $_file_name = $_POST['newimage'];
             $_imgpos = $_POST['imgpos'];
+      
 
             $_owner_id = Yii::app()->user->getId();
-            $command = Yii::app()->db->createCommand("SELECT * From tbl_projects where owner_id = '$_owner_id' and mode = 0 and ukey='$_ukey'");
+            $sql = "SELECT * From tbl_projects where owner_id = '$_owner_id' and mode = 0 and ukey='$_ukey'";
+            $command = Yii::app()->db->createCommand($sql);
             $result = $command->queryRow();
             $_upload_message = "";
             $_done = false;
+       
             if (isset($result['ukey'])) {
                 $_project_id = $result['id'];
+            
                 if (!empty($_file_name)) {
                     $savepath = Yii::getPathOfAlias('webroot') . '/collage/';
                     $new_filename = Helpers::getFilenameAsUnique($savepath, $_file_name);
@@ -149,10 +153,13 @@ class SiteController extends AppController {
                     //setting images size (width,height)
                     $model_img = DTUploadedFile::setImageAttribute($model_img, $newsavepath . $new_filename);
                     //generate thumb here
+      
+                 
 
                     $pathToThumbs = DTUploadedFile::creeatRecurSiveDirectories(array("thumbs"));
                     DTUploadedFile::createThumbs($savepath, $pathToThumbs, 180, $thumb_name);
                     $model_img->save();
+                    
                 }
                 $_retArray = '';
                 $criteria = new CDbCriteria();
@@ -174,8 +181,7 @@ class SiteController extends AppController {
                 $pages->applyLimit($criteria);
                 $_project_bg_model_imges = Images::model()->findAll($criteria);
 
-
-
+           
                 $_data = $this->renderPartial(Yii::app()->params['AppViews']['si_partial_bg_img_view'], array(
                     'models' => $_project_model_imges,
                     'modelsbg' => $_project_bg_model_imges,
@@ -365,13 +371,14 @@ class SiteController extends AppController {
                     'c-left' => $current_Image->left,
                     'c-top' => $current_Image->top,
                 );
-                $cropped_image = CHtml::image(Yii::app()->baseUrl . "/collage/" . $current_Image->cropped_img, $result['bg_id'],$htmlOptions);
+                $cropped_image = CHtml::image(Yii::app()->baseUrl . "/collage/" . $current_Image->cropped_img, $result['bg_id'], $htmlOptions);
                 echo CJSON::encode(array(
                     'message' => $_upload_message,
                     'cc' => $result['bg_id'],
                     'all_result' => $current_Image->attributes,
                     'cropped_image' => $cropped_image,
                     'dataset' => $_data,
+                    'htmlOptions' => $htmlOptions,
                 ));
             }
         }

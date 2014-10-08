@@ -6,8 +6,13 @@ var collage = {
                 '<div class="ui-resizable-handle ui-resizable-sw" id="swgrip"></div>' +
                 '<div class="ui-resizable-handle ui-resizable-se" id="segrip"></div>';
         style = "style='width:" + data['all_result']['width'] + "px;height:" + data['all_result']['height'] + "px;'";
+        other_htm_op = '';
+        for(obj in data['htmlOptions']){
+            other_htm_op+= obj+'='+data['htmlOptions'][obj]+' ';
+        }
+        
         html = "<h3>" + data['all_result']['dimension_type'] + "</h3>";
-        html += "<div class='image_part' " + style + ">";
+        html += "<div class='image_part' " + style + " "+other_htm_op+">";
         html += data.cropped_image;
         html += html_with_scale;
         html += "</div>";

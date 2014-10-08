@@ -22,7 +22,7 @@ class Images extends CActiveRecord {
         $pages->pageSize = VIEW_PER_PAGE;
         $pages->applyLimit($criteria);
         $_project_bg_model_imges = Images::model()->findAll($criteria);
-        return array($_project_bg_model_imges, $pages,$count);
+        return array($_project_bg_model_imges, $pages, $count);
     }
 
     /**
@@ -37,15 +37,17 @@ class Images extends CActiveRecord {
         $pages->pageSize = VIEW_PER_PAGE;
         $pages->applyLimit($criteria);
         $_project_model_imges = Images::model()->findAll($criteria);
-        return array($_project_model_imges, $pages,$count);
+        return array($_project_model_imges, $pages, $count);
     }
+
     /**
      * 
      * @return type
      */
     public function beforeSave() {
-        if($this->isNewRecord){
-            
+        if ($this->isNewRecord) {
+            $filePath = Yii::getPathOfAlias('webroot') . '/collage/' . $this->cropped_img;
+            DTUploadedFile::setImageAttribute($this, $filePath);
         }
         return parent::beforeSave();
     }

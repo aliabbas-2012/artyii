@@ -53,20 +53,33 @@ class UploadController extends Controller {
                 $dimension_type = 'landscape';
             }
             $attributes = array("height" => $height, "width" => $width, 'dimension_type' => $dimension_type);
-            
+
 
             $image_path = Yii::getPathOfAlias('webroot.collage') . "/" . $image->cropped_img;
             $pathToThumbs = Yii::getPathOfAlias('webroot.collage.');
 
             DTUploadedFile::createThumbs($image_path, $pathToThumbs, $width, $image->cropped_img, $height);
-        }
-        else if (isset($_POST['left']) && isset($_POST['top'])) {
-             $attributes = array("left" => $_POST['left'], "top" => $_POST['top']);
-        }
-        else if (isset($_POST['angle'])) {
-             $attributes = array("angle" =>$_POST['angle']);
+        } else if (isset($_POST['left']) && isset($_POST['top'])) {
+            $attributes = array("left" => $_POST['left'], "top" => $_POST['top']);
+        } else if (isset($_POST['angle'])) {
+            $attributes = array("angle" => $_POST['angle']);
         }
         Images::model()->updateByPk($id, $attributes);
+    }
+
+    /**
+     * update size is like a cron
+     * job
+     */
+    public function actionUpdatesizes() {
+        $images = Images::model()->findAll();
+        foreach ($images as $model) {
+            $filePath = Yii::getPathOfAlias('webroot') . '/collage/' . $model->cropped_img;
+            $model = DTUploadedFile::setImageAttribute($model, $filePath);
+            $attributes = array("height" => $model->height, "width" => $model->width, 
+                'dimension_type' => $model->dimension_type);
+             Images::model()->updateByPk($model->id, $attributes);
+        }
     }
 
 }

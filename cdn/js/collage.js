@@ -7,12 +7,12 @@ var collage = {
                 '<div class="ui-resizable-handle ui-resizable-se" id="segrip"></div>';
         style = "style='width:" + data['all_result']['width'] + "px;height:" + data['all_result']['height'] + "px;'";
         other_htm_op = '';
-        for(obj in data['htmlOptions']){
-            other_htm_op+= obj+'='+data['htmlOptions'][obj]+' ';
+        for (obj in data['htmlOptions']) {
+            other_htm_op += obj + '=' + data['htmlOptions'][obj] + ' ';
         }
-        
+
         html = "<h3>" + data['all_result']['dimension_type'] + "</h3>";
-        html += "<div class='image_part' " + style + " "+other_htm_op+">";
+        html += "<div class='image_part' " + style + " " + other_htm_op + ">";
         html += data.cropped_image;
         html += html_with_scale;
         html += "</div>";
@@ -35,10 +35,10 @@ var collage = {
         });
     },
     resizableCollage: function() {
-        
-         $(collage.element_tob_rotate+"").resizable({
+
+        $(collage.element_tob_rotate + "").resizable({
             stop: function(event, ui) {
-                
+
                 object = collage.children(ui.helper);
                 //size_update_url
                 $.post(size_update_url, {
@@ -58,7 +58,7 @@ var collage = {
     mouseStartAngle: false, // The angle of the mouse relative to the image centre at the start of the rotation
     imageStartAngle: false,
     element_tob_rotate: "#lighttable",
-    start_set_pos :false,
+    start_set_pos: false,
     initPhotos: function() {
         // (Ensure this function doesn't run twice)
         if (collage.loaded)
@@ -71,7 +71,7 @@ var collage = {
         // Process each photo in turn...
         $(collage.element_tob_rotate).each(function(index) {
 
-            
+
             // Set a random position and angle for this photo
             var left = Math.floor(Math.random() * 450 + 100);
             var top = Math.floor(Math.random() * 100 + 100);
@@ -81,7 +81,7 @@ var collage = {
             if (collage.start_set_pos == true) {
                 $(this).css('left', left + 'px');
                 $(this).css('top', top + 'px');
-                $(this).css('position','inherit');
+                $(this).css('position', 'inherit');
 //                collage.arrangeLeftParent(this,left);
 //                collage.arrangeTopParent(this,top);
             }
@@ -135,7 +135,7 @@ var collage = {
                 if ($(this).data('loaded'))
                     return;
                 $(this).data('loaded', true);
-                
+
                 // Make it completely transparent, ready for fading in
                 $(this).css('opacity', 1);
                 // Make sure its z-index is higher than the photos already on the table
@@ -267,7 +267,7 @@ var collage = {
         collage.children($(collage.imageBeingRotated)).css('-webkit-transform', 'rotate(' + rotateAngle + 'rad)');
         collage.children($(collage.imageBeingRotated)).css('-o-transform', 'rotate(' + rotateAngle + 'rad)');
         $(collage.imageBeingRotated).data('currentRotation', rotateAngle);
-       
+
         return false;
     },
     // Calculate the centre point of a given image
@@ -295,16 +295,36 @@ var collage = {
         // Return the calculated centre coordinates
         return Array(imageCentreX, imageCentreY);
     },
-    arrangeLeftParent : function(obj,left){
+    arrangeLeftParent: function(obj, left) {
         $(obj).parent().css('left', left + 'px');
     },
-    
-    arrangeTopParent : function(obj,top){
+    arrangeTopParent: function(obj, top) {
         $(obj).parent().css('top', top + 'px');
     },
-    children:function(obj){
+    children: function(obj) {
 //        obj = $(obj).children().eq(0);
         return obj;
+    },
+    contexteMenu: function() {
+        $("#lighttable").contextmenu({
+            delegate: "img",
+            menu: [
+                {title: "Crop", cmd: "crop",},
+                {title: "Scale",cmd:"scale"},
+               
+            ],
+            select: function(event, ui) {
+                console.log(ui.cmd);
+                 elem_id = $.trim($(ui.target[0]).attr("alt"));
+                 if(ui.cmd=="crop"){
+                    
+                     $("#crop_"+elem_id).trigger("click");
+                 }
+                 else if(ui.cmd=="scale"){
+                     $("#scale_"+elem_id).trigger("click");
+                 }
+            }
+        });
     }
 
 }

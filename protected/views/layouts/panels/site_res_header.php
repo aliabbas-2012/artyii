@@ -12,8 +12,8 @@
         <link href="<?php echo BASE_URL; ?>/cdn/bootstrap-datepicker/css/datepicker.css" rel="stylesheet">
         <link href="<?php echo BASE_URL; ?>/cdn/css/style.css?v=3" rel="stylesheet">
 
-        <script src="<?php echo BASE_URL; ?>/js/jquery.js?t=1"></script>
-        <script type="text/javascript" src="<?php echo BASE_URL; ?>/js/jquery-ui-1.8.2.custom.min.js"></script>
+        <script src="<?php echo BASE_URL; ?>/cdn/js/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="<?php echo BASE_URL; ?>/cdn/js/jquery-ui.min11.js"></script>
         <script src="<?php echo BASE_URL; ?>/js/jquery.validate.js?t=1"></script>
         <script src="<?php echo BASE_URL; ?>/js/jquery.lazyload.js?t=1"></script>
         <script src="<?php echo BASE_URL; ?>/js/html2canvas.js?t=1"></script>

@@ -22,6 +22,7 @@
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/uploader.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/file-uploader-master/client/js/jquery-plugin.js"></script>
 
+<script src="<?php echo Yii::app()->request->baseUrl; ?>/cdn/js/jquery.ui-contextmenu.min.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>/cdn/js/collage.js"></script>
 <script type="text/javascript">
     var size_update_url = '<?php echo $this->createUrl('/upload/updateResize'); ?>';
@@ -32,6 +33,7 @@
 
         //collage.resizableCollage();
         collage.initPhotos();
+        collage.contexteMenu();
     });
     function loaddefaultprojectimages() {
         $.post('<?php echo $this->createUrl('/site/loaddefaultimages'); ?>', {
@@ -148,7 +150,7 @@
         });
     }
 
-    $('.make_bg').live("click", function(e) {
+    $('.make_bg').click(function(e) {
 
         imgkey = $(this).attr('imgkey');
         var r = confirm("WARNING: Image will be used as background image. Are you agree?");
@@ -164,7 +166,7 @@
 
         e.stopImmediatePropagation();
     });
-    $('.delete_img').live("click", function(e) {
+    $('.delete_img').click(function(e) {
 
         imgkey = $(this).attr('imgkey');
         var r = confirm("WARNING: Image will be deleted. Are you sure you want to delete this image?");
@@ -180,7 +182,7 @@
 
         e.stopImmediatePropagation();
     });
-    $('#savecrop').live("click", function(e) {
+    $('#savecrop').click(function(e) {
         $("#savecrop").attr('disabled', 'disabled');
         g_x = $('#x').val();
         g_y = $('#y').val();
@@ -205,7 +207,7 @@
 
         e.stopImmediatePropagation();
     });
-    $('#savescale').live("click", function(e) {
+    $('#savescale').click(function(e) {
         $("#savescale").attr('disabled', 'disabled');
         if (scalew > 0 || scaleh > 0) {
 
@@ -237,7 +239,7 @@
     var orw = 0;
     var orh = 0;
     $(document).ready(function() {
-        $('.edit_img').live("click", function(e) {
+        $('.edit_img').click(function(e) {
             $('#x').val('');
             $('#y').val('');
             $('#w').val('');
@@ -270,8 +272,8 @@
             });
             e.stopImmediatePropagation();
         });
-        $('.scale_img').live("click", function(e) {
-
+        $('.scale_img').click(function(e) {
+           
             //$( ".display_avatar_scale" ).resizable( "destroy" );
             //$('.display_avatar_scale').attr( "style", "" );
             //$('.ui-wrapper').attr( "style", "" );
@@ -367,10 +369,10 @@
         $("#notesText").html($("#notes").val());
     }
 
-    $("#backit").live("click", function() {
+    $("#backit").click(function() {
         window.location.href = '<?php echo BASE_URL; ?>/' + "site/upload/?ukey=" + ukey
     });
-    $("#saveit").live("click", function() {
+    $("#saveit").click(function() {
         printDiv();
     });</script>
 
@@ -501,8 +503,8 @@
 
 
                                                     <br>
-                                                    <a class="scale_img" img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="color:red;" href="javascript://">Scale |</a>
-                                                    <a class="edit_img" cropped_image="<?php echo $imgmodel[$i]->cropped_img; ?>" img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="color:red;" href="javascript://"> Crop</a>
+                                                    <a id="scale_<?php echo $imgmodel[$i]->id ?>" class="scale_img" img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="color:red;" href="javascript://">Scale |</a>
+                                                    <a id="crop_<?php echo $imgmodel[$i]->id ?>" class="edit_img" cropped_image="<?php echo $imgmodel[$i]->cropped_img; ?>" img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="color:red;" href="javascript://"> Crop</a>
 
 
                                                 </div>
@@ -577,7 +579,7 @@
             }, "json");
         }
 
-        $('#savecrop').live("click", function(e) {
+        $('#savecrop').click(function(e) {
             $("#savecrop").attr('disabled', 'disabled');
             g_x = $('#x').val();
             g_y = $('#y').val();
@@ -612,7 +614,7 @@
         var g_w = '';
         var g_h = '';
         $(document).ready(function() {
-            $('.edit_img').live("click", function(e) {
+            $('.edit_img').click(function(e) {
                 imbackground = $(this).attr('background');
                 $('#x').val('');
                 $('#y').val('');
@@ -646,7 +648,7 @@
                 });
                 e.stopImmediatePropagation();
             });
-            $('.not_edit_img').live("click", function(e) {
+            $('.not_edit_img').click(function(e) {
 
                 alert("This image is not editable.");
                 e.stopImmediatePropagation();

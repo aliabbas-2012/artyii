@@ -149,86 +149,90 @@
             $.colorbox.close();
         });
     }
+    $(function() {
+        $('.make_bg').click(function(e) {
 
-    $('.make_bg').click(function(e) {
+            imgkey = $(this).attr('imgkey');
+            var r = confirm("WARNING: Image will be used as background image. Are you agree?");
+            if (r == true)
+            {
 
-        imgkey = $(this).attr('imgkey');
-        var r = confirm("WARNING: Image will be used as background image. Are you agree?");
-        if (r == true)
-        {
+                make_background();
+            }
+            else
+            {
 
-            make_background();
-        }
-        else
-        {
+            }
 
-        }
+            e.stopImmediatePropagation();
+        });
+        $('.delete_img').click(function(e) {
 
-        e.stopImmediatePropagation();
-    });
-    $('.delete_img').click(function(e) {
+            imgkey = $(this).attr('imgkey');
+            var r = confirm("WARNING: Image will be deleted. Are you sure you want to delete this image?");
+            if (r == true)
+            {
 
-        imgkey = $(this).attr('imgkey');
-        var r = confirm("WARNING: Image will be deleted. Are you sure you want to delete this image?");
-        if (r == true)
-        {
+                deleteimages();
+            }
+            else
+            {
 
-            deleteimages();
-        }
-        else
-        {
+            }
 
-        }
+            e.stopImmediatePropagation();
+        });
+        $('#savecrop').click(function(e) {
+            $("#savecrop").attr('disabled', 'disabled');
+            g_x = $('#x').val();
+            g_y = $('#y').val();
+            g_w = $('#w').val();
+            g_h = $('#h').val();
+            if (g_x > 0 || g_y > 0 || g_w > 0 || g_h > 0) {
 
-        e.stopImmediatePropagation();
-    });
-    $('#savecrop').click(function(e) {
-        $("#savecrop").attr('disabled', 'disabled');
-        g_x = $('#x').val();
-        g_y = $('#y').val();
-        g_w = $('#w').val();
-        g_h = $('#h').val();
-        if (g_x > 0 || g_y > 0 || g_w > 0 || g_h > 0) {
+            } else {
+                $("#savecrop").removeAttr('disabled', true);
+                alert("WARNING: You must have to crop to save the image.");
+                return false;
+            }
+            var r = confirm("WARNING: Image will be cropped. Are you sure you want to crop this image?");
+            if (r == true)
+            {
+                cropimage();
+            }
+            else
+            {
+                $("#savecrop").removeAttr('disabled', 'disabled');
+            }
 
-        } else {
-            $("#savecrop").removeAttr('disabled', true);
-            alert("WARNING: You must have to crop to save the image.");
-            return false;
-        }
-        var r = confirm("WARNING: Image will be cropped. Are you sure you want to crop this image?");
-        if (r == true)
-        {
-            cropimage();
-        }
-        else
-        {
-            $("#savecrop").removeAttr('disabled', 'disabled');
-        }
+            e.stopImmediatePropagation();
+        });
+        $('#savescale').click(function(e) {
+            $("#savescale").attr('disabled', 'disabled');
+            if (scalew > 0 || scaleh > 0) {
 
-        e.stopImmediatePropagation();
-    });
-    $('#savescale').click(function(e) {
-        $("#savescale").attr('disabled', 'disabled');
-        if (scalew > 0 || scaleh > 0) {
+            } else {
+                $("#savescale").removeAttr('disabled', true);
+                alert("WARNING: You must have to scale to save the image.");
+                return false;
+            }
+            var r = confirm("WARNING: Image will be scaled. Are you sure you want to scale this image?");
+            if (r == true)
+            {
 
-        } else {
-            $("#savescale").removeAttr('disabled', true);
-            alert("WARNING: You must have to scale to save the image.");
-            return false;
-        }
-        var r = confirm("WARNING: Image will be scaled. Are you sure you want to scale this image?");
-        if (r == true)
-        {
+                scaleimage();
+            }
+            else
+            {
+                $("#savescale").removeAttr('disabled', 'disabled');
+            }
 
-            scaleimage();
-        }
-        else
-        {
-            $("#savescale").removeAttr('disabled', 'disabled');
-        }
+            e.stopImmediatePropagation();
+        });
 
-        e.stopImmediatePropagation();
-    });
+    })
+
+
     var xxx = 1;
     var jcrop_api;
     var _icropimgkey = '';

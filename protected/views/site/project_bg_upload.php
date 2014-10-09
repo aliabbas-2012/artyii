@@ -169,206 +169,211 @@
             newimage = '';
             $.colorbox.close();
         });
-    }
-
-    $('.make_bg').live("click", function(e) {
-
-        imgkey = $(this).attr('imgkey');
-        var r = confirm("WARNING: Image will be used as background image. Are you agree?");
-        if (r == true)
-        {
-
-            make_background();
-
         }
-        else
-        {
+        $(function({
 
-        }
+        $('.make_bg').click(function(e) {
 
-        e.stopImmediatePropagation();
+            imgkey = $(this).attr('imgkey');
+            var r = confirm("WARNING: Image will be used as background image. Are you agree?");
+            if (r == true)
+            {
 
-    });
+                make_background();
 
-    $('.delete_img').live("click", function(e) {
+            }
+            else
+            {
 
-        imgkey = $(this).attr('imgkey');
-        var r = confirm("WARNING: Image will be deleted. Are you sure you want to delete this image?");
-        if (r == true)
-        {
-
-            deleteimages();
-
-        }
-        else
-        {
-
-        }
-
-        e.stopImmediatePropagation();
-
-    });
-
-
-    $('#savecrop').live("click", function(e) {
-        $("#savecrop").attr('disabled', 'disabled');
-        g_x = $('#x').val();
-        g_y = $('#y').val();
-        g_w = $('#w').val();
-        g_h = $('#h').val();
-        if (g_x > 0 || g_y > 0 || g_w > 0 || g_h > 0) {
-
-        } else {
-            $("#savecrop").removeAttr('disabled', true);
-            alert("WARNING: You must have to crop to save the image.");
-            return false;
-        }
-        var r = confirm("WARNING: Image will be cropped. Are you sure you want to crop this image?");
-        if (r == true)
-        {
-
-            cropimage();
-
-        }
-        else
-        {
-            $("#savecrop").removeAttr('disabled', 'disabled');
-        }
-
-        e.stopImmediatePropagation();
-
-    });
-
-    $('#savescale').live("click", function(e) {
-        $("#savescale").attr('disabled', 'disabled');
-
-        if (scalew > 0 || scaleh > 0) {
-
-        } else {
-            $("#savescale").removeAttr('disabled', true);
-            alert("WARNING: You must have to scale to save the image.");
-            return false;
-        }
-        var r = confirm("WARNING: Image will be scaled. Are you sure you want to scale this image?");
-        if (r == true)
-        {
-
-            scaleimage();
-
-        }
-        else
-        {
-            $("#savescale").removeAttr('disabled', 'disabled');
-        }
-
-        e.stopImmediatePropagation();
-
-    });
-
-
-    var xxx = 1;
-    var jcrop_api;
-    var _icropimgkey = '';
-    var g_x = '';
-    var g_y = '';
-    var g_w = '';
-    var g_h = '';
-
-    var orw = 0;
-    var orh = 0;
-    $(document).ready(function() {
-        $('.edit_img').live("click", function(e) {
-            $('#x').val('');
-            $('#y').val('');
-            $('#w').val('');
-            $('#h').val('');
-            $("#savecrop").removeAttr('disabled', 'disabled');
-            _thisfileName = $(this).attr('img_name');
-            _icropimgkey = $(this).attr('imgkey');
-            $("#cuimagekey").val(_icropimgkey);
-            $('.display_avatar').attr('src', tempImagePath + _thisfileName);
-            $.colorbox({
-                inline: true,
-                href: "#inline_content",
-                onComplete: function() {
-                    uimagekey = _thisfileName;
-                    $('.display_avatar').Jcrop({
-                        bgColor: 'black',
-                        bgOpacity: .4,
-                        setSelect: [100, 100, 50, 50],
-                        onSelect: updateCoords
-                    }, function() {
-
-                        jcrop_api = this;
-
-
-                    });
-                },
-                onClosed: function() {
-                    jcrop_api.destroy();
-                }
-            });
+            }
 
             e.stopImmediatePropagation();
+
         });
 
-        $('.scale_img').live("click", function(e) {
+        $('.delete_img').click(function(e) {
 
-            //$( ".display_avatar_scale" ).resizable( "destroy" );
-            //$('.display_avatar_scale').attr( "style", "" );
-            //$('.ui-wrapper').attr( "style", "" );
-            //$('.ui-wrapper').css( "width", orw);
-            //$('.ui-wrapper').css( "height", orh );
+            imgkey = $(this).attr('imgkey');
+            var r = confirm("WARNING: Image will be deleted. Are you sure you want to delete this image?");
+            if (r == true)
+            {
 
-            scalew = 0;
-            scaleh = 0;
-            _thisfileName = $(this).attr('img_name');
-            _icropimgkey = $(this).attr('imgkey');
-            $("#cuimagekey").val(_icropimgkey);
-            $('.display_avatar_scale').attr('src', tempImagePath + _thisfileName);
-            $.colorbox({
-                inline: true,
-                href: "#inline_scale_content",
-                onComplete: function() {
+                deleteimages();
 
-                    $(".display_avatar_scale").resizable({stop: function(event, ui) {
-                            //console.log(ui.size.width);
-                            scalew = ui.size.width;
-                            scaleh = ui.size.height;
+            }
+            else
+            {
 
-                            orw = ui.originalSize.width;
-                            orh = ui.originalSize.height;
-                        }}
+            }
 
-                    );
-
-                },
-                onClosed: function() {
-                    scalew = 0;
-                    scaleh = 0;
-                    location.reload();
-                    //$( ".display_avatar_scale" ).resizable( "destroy" );
-                }
-            });
             e.stopImmediatePropagation();
+
         });
-    });
-    function updateCoords(c)
-    {
-        $('#x').val(c.x);
-        $('#y').val(c.y);
-        $('#w').val(c.w);
-        $('#h').val(c.h);
-    }
+
+
+        $('#savecrop').click(function(e) {
+            $("#savecrop").attr('disabled', 'disabled');
+            g_x = $('#x').val();
+            g_y = $('#y').val();
+            g_w = $('#w').val();
+            g_h = $('#h').val();
+            if (g_x > 0 || g_y > 0 || g_w > 0 || g_h > 0) {
+
+            } else {
+                $("#savecrop").removeAttr('disabled', true);
+                alert("WARNING: You must have to crop to save the image.");
+                return false;
+            }
+            var r = confirm("WARNING: Image will be cropped. Are you sure you want to crop this image?");
+            if (r == true)
+            {
+
+                cropimage();
+
+            }
+            else
+            {
+                $("#savecrop").removeAttr('disabled', 'disabled');
+            }
+
+            e.stopImmediatePropagation();
+
+        });
+
+        $('#savescale').click(function(e) {
+            $("#savescale").attr('disabled', 'disabled');
+
+            if (scalew > 0 || scaleh > 0) {
+
+            } else {
+                $("#savescale").removeAttr('disabled', true);
+                alert("WARNING: You must have to scale to save the image.");
+                return false;
+            }
+            var r = confirm("WARNING: Image will be scaled. Are you sure you want to scale this image?");
+            if (r == true)
+            {
+
+                scaleimage();
+
+            }
+            else
+            {
+                $("#savescale").removeAttr('disabled', 'disabled');
+            }
+
+            e.stopImmediatePropagation();
+
+        });
+        })
+                var xxx = 1;
+        var jcrop_api;
+        var _icropimgkey = '';
+        var g_x = '';
+        var g_y = '';
+        var g_w = '';
+        var g_h = '';
+
+        var orw = 0;
+        var orh = 0;
+        $(document).ready(function() {
+            $('.edit_img').click(function(e) {
+                $('#x').val('');
+                $('#y').val('');
+                $('#w').val('');
+                $('#h').val('');
+                $("#savecrop").removeAttr('disabled', 'disabled');
+                _thisfileName = $(this).attr('img_name');
+                _icropimgkey = $(this).attr('imgkey');
+                $("#cuimagekey").val(_icropimgkey);
+                $('.display_avatar').attr('src', tempImagePath + _thisfileName);
+                $.colorbox({
+                    inline: true,
+                    href: "#inline_content",
+                    onComplete: function() {
+                        uimagekey = _thisfileName;
+                        $('.display_avatar').Jcrop({
+                            bgColor: 'black',
+                            bgOpacity: .4,
+                            setSelect: [100, 100, 50, 50],
+                            onSelect: updateCoords
+                        }, function() {
+
+                            jcrop_api = this;
+
+
+                        });
+                    },
+                    onClosed: function() {
+                        jcrop_api.destroy();
+                    }
+                });
+
+                e.stopImmediatePropagation();
+            });
+
+            $('.scale_img').click(function(e) {
+
+                //$( ".display_avatar_scale" ).resizable( "destroy" );
+                //$('.display_avatar_scale').attr( "style", "" );
+                //$('.ui-wrapper').attr( "style", "" );
+                //$('.ui-wrapper').css( "width", orw);
+                //$('.ui-wrapper').css( "height", orh );
+
+                scalew = 0;
+                scaleh = 0;
+                _thisfileName = $(this).attr('img_name');
+                _icropimgkey = $(this).attr('imgkey');
+                $("#cuimagekey").val(_icropimgkey);
+                $('.display_avatar_scale').attr('src', tempImagePath + _thisfileName);
+                $.colorbox({
+                    inline: true,
+                    href: "#inline_scale_content",
+                    onComplete: function() {
+
+                        $(".display_avatar_scale").resizable({stop: function(event, ui) {
+                                //console.log(ui.size.width);
+                                scalew = ui.size.width;
+                                scaleh = ui.size.height;
+
+                                orw = ui.originalSize.width;
+                                orh = ui.originalSize.height;
+                            }}
+
+                        );
+
+                    },
+                    onClosed: function() {
+                        scalew = 0;
+                        scaleh = 0;
+                        location.reload();
+                        //$( ".display_avatar_scale" ).resizable( "destroy" );
+                    }
+                });
+                e.stopImmediatePropagation();
+            });
+        });
+        function updateCoords(c)
+        {
+            $('#x').val(c.x);
+            $('#y').val(c.y);
+            $('#w').val(c.w);
+            $('#h').val(c.h);
+        }
 
 
 </script>
 <script>
-    var ukey = '<?php echo $_GET["ukey"]; ?>';
-    $("#saveit").live("click", function() {
-        window.location.href = '<?php echo $this->createUrl("/site/upload/"); ?>/' + "?ukey=" + ukey
-    });
-    var tempImagePath = '<?php echo Yii::app()->request->baseUrl; ?>/collage/';
+        var ukey = '<?php echo $_GET["ukey"]; ?>';
+        $(function() {
+            $("#saveit").click(, function() {
+            window.location.href = '<?php echo $this->createUrl("/site/upload/"); ?>/' + "?ukey=" + ukey
+        });
+    }
+    )
+
+
+            var tempImagePath = '<?php echo Yii::app()->request->baseUrl; ?>/collage/';
 
 </script>
 

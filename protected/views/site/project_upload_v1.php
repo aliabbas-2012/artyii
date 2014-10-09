@@ -98,7 +98,7 @@
             newimage = '';
         });
     }
-    
+
     function cropimage() {
         var cuimagekey = $('#cuimagekey').val();
         $.post('<?php echo Yii::app()->request->baseUrl; ?>' + '/site/cropimg', {
@@ -113,81 +113,83 @@
             if (data) {
                 $('.imgblock').html(data);
             }
-            $("#savecrop").removeAttr('disabled',true);
+            $("#savecrop").removeAttr('disabled', true);
             newimage = '';
             $.colorbox.close();
         });
     }
+    $(function() {
+        $('.make_bg').click(function(e) {
 
-    $('.make_bg').live("click", function(e) {
+            imgkey = $(this).attr('imgkey');
+            var r = confirm("WARNING: Image will be used as background image. Are you agree?");
+            if (r == true)
+            {
 
-        imgkey = $(this).attr('imgkey');
-        var r = confirm("WARNING: Image will be used as background image. Are you agree?");
-        if (r == true)
-        {
+                make_background();
 
-            make_background();
+            }
+            else
+            {
 
-        }
-        else
-        {
+            }
 
-        }
+            e.stopImmediatePropagation();
 
-        e.stopImmediatePropagation();
+        });
 
-    });
+        $('.delete_img').click(function(e) {
 
-    $('.delete_img').live("click", function(e) {
+            imgkey = $(this).attr('imgkey');
+            var r = confirm("WARNING: Image will be deleted. Are you sure you want to delete this image?");
+            if (r == true)
+            {
 
-        imgkey = $(this).attr('imgkey');
-        var r = confirm("WARNING: Image will be deleted. Are you sure you want to delete this image?");
-        if (r == true)
-        {
+                deleteimages();
 
-            deleteimages();
+            }
+            else
+            {
 
-        }
-        else
-        {
+            }
 
-        }
+            e.stopImmediatePropagation();
 
-        e.stopImmediatePropagation();
+        });
 
-    });
-    
-    
-    $('.#savecrop').live("click", function(e) {
-        $("#savecrop").attr('disabled', 'disabled');
-        g_x =  $('#x').val();
-        g_y =  $('#y').val();
-        g_w=  $('#w').val();
-        g_h =  $('#h').val();
-        if(g_x > 0 || g_y >0 || g_w>0 || g_h >0){
-            
-        }else{
-            $("#savecrop").removeAttr('disabled', true);
-            alert("WARNING: You must have to crop to save the image.");
-            return false;
-        }
-        var r = confirm("WARNING: Image will be cropped. Are you sure you want to crop this image?");
-        if (r == true)
-        {
 
-            cropimage();
+        $('.#savecrop').click(function(e) {
+            $("#savecrop").attr('disabled', 'disabled');
+            g_x = $('#x').val();
+            g_y = $('#y').val();
+            g_w = $('#w').val();
+            g_h = $('#h').val();
+            if (g_x > 0 || g_y > 0 || g_w > 0 || g_h > 0) {
 
-        }
-        else
-        {
-             $("#savecrop").removeAttr('disabled', 'disabled');
-        }
-       
-        e.stopImmediatePropagation();
+            } else {
+                $("#savecrop").removeAttr('disabled', true);
+                alert("WARNING: You must have to crop to save the image.");
+                return false;
+            }
+            var r = confirm("WARNING: Image will be cropped. Are you sure you want to crop this image?");
+            if (r == true)
+            {
 
-    });
-    
-    
+                cropimage();
+
+            }
+            else
+            {
+                $("#savecrop").removeAttr('disabled', 'disabled');
+            }
+
+            e.stopImmediatePropagation();
+
+        });
+
+
+    })
+
     var xxx = 1;
     var jcrop_api;
     var _icropimgkey = '';
@@ -196,7 +198,7 @@
     var g_w = '';
     var g_h = '';
     $(document).ready(function() {
-        $('.edit_img').live("click", function(e) {
+        $('.edit_img').click(function(e) {
             $('#x').val('');
             $('#y').val('');
             $('#w').val('');
@@ -243,9 +245,11 @@
 </script>
 <script>
     var ukey = '<?php echo $_GET["ukey"]; ?>';
-    $("#saveit").live("click", function() {
-        window.location.href = '<?php echo BASE_URL; ?>/' + "site/collage/?ukey=" + ukey
-    });
+    $(function() {
+        $("#saveit").click(, function() {
+            window.location.href = '<?php echo BASE_URL; ?>/' + "site/collage/?ukey=" + ukey
+        });
+    })
     var tempImagePath = '<?php echo Yii::app()->request->baseUrl; ?>/collage/';
 
 </script>

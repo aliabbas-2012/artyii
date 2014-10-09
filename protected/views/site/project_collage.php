@@ -273,7 +273,7 @@
             e.stopImmediatePropagation();
         });
         $('.scale_img').click(function(e) {
-           
+
             //$( ".display_avatar_scale" ).resizable( "destroy" );
             //$('.display_avatar_scale').attr( "style", "" );
             //$('.ui-wrapper').attr( "style", "" );
@@ -368,13 +368,18 @@
     function getValueNotes() {
         $("#notesText").html($("#notes").val());
     }
+    $(function() {
+        $("#backit").click(function() {
+            window.location.href = '<?php echo BASE_URL; ?>/' + "site/upload/?ukey=" + ukey
+        });
+        $("#saveit").click(function() {
+            printDiv();
+        });
 
-    $("#backit").click(function() {
-        window.location.href = '<?php echo BASE_URL; ?>/' + "site/upload/?ukey=" + ukey
-    });
-    $("#saveit").click(function() {
-        printDiv();
-    });</script>
+    })
+
+
+</script>
 
 
 <div id="pageTitle" style="text-align: center;">

@@ -360,7 +360,7 @@
                     $.post('<?php echo BASE_URL; ?>/' + "site/saveimg", {data: img, ukey: ukey, notes: note}, function(file) {
                         if (file != '') {
                             localStorage.clear();
-                            // window.location.href = '<?php echo BASE_URL; ?>/' + "site/success/?ukey=" + ukey
+                            window.location.href = '<?php echo BASE_URL; ?>/' + "site/success/?ukey=" + ukey
                         }
 
                     });

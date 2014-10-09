@@ -1086,7 +1086,7 @@ class SiteController extends AppController {
                 $_id = $result['id'];
                 $model = $this->loadModel($_id);
                 $model->final_image_name = $file;
-                //$model->mode = 1;
+                $model->mode = 1;
                 $model->save();
                 echo $file;
             }

@@ -309,23 +309,338 @@ var collage = {
         $("#lighttable").contextmenu({
             delegate: "img",
             menu: [
-                {title: "Crop", cmd: "crop",},
-                {title: "Scale",cmd:"scale"},
-               
+                {title: "Crop", cmd: "crop", },
+                {title: "Scale", cmd: "scale"},
             ],
             select: function(event, ui) {
                 console.log(ui.cmd);
-                 elem_id = $.trim($(ui.target[0]).attr("alt"));
-                 if(ui.cmd=="crop"){
-                    
-                     $("#crop_"+elem_id).trigger("click");
-                 }
-                 else if(ui.cmd=="scale"){
-                     $("#scale_"+elem_id).trigger("click");
-                 }
+                elem_id = $.trim($(ui.target[0]).attr("alt"));
+                if (ui.cmd == "crop") {
+
+                    $("#crop_" + elem_id).trigger("click");
+                }
+                else if (ui.cmd == "scale") {
+                    $("#scale_" + elem_id).trigger("click");
+                }
             }
         });
+    },
+    registerStep3Events: function() {
+        $('.make_bg').click(function(e) {
+
+            imgkey = $(this).attr('imgkey');
+            var r = confirm("WARNING: Image will be used as background image. Are you agree?");
+            if (r == true)
+            {
+
+                make_background();
+            }
+            else
+            {
+
+            }
+
+            e.stopImmediatePropagation();
+        });
+        $('.delete_img').click(function(e) {
+
+            imgkey = $(this).attr('imgkey');
+            var r = confirm("WARNING: Image will be deleted. Are you sure you want to delete this image?");
+            if (r == true)
+            {
+
+                deleteimages(this);
+            }
+            else
+            {
+
+            }
+
+            e.stopImmediatePropagation();
+        });
+        $('#savecrop').click(function(e) {
+            $("#savecrop").attr('disabled', 'disabled');
+            g_x = $('#x').val();
+            g_y = $('#y').val();
+            g_w = $('#w').val();
+            g_h = $('#h').val();
+            if (g_x > 0 || g_y > 0 || g_w > 0 || g_h > 0) {
+
+            } else {
+                $("#savecrop").removeAttr('disabled', true);
+                alert("WARNING: You must have to crop to save the image.");
+                return false;
+            }
+            var r = confirm("WARNING: Image will be cropped. Are you sure you want to crop this image?");
+            if (r == true)
+            {
+
+                cropimage();
+            }
+            else
+            {
+                $("#savecrop").removeAttr('disabled', 'disabled');
+            }
+
+            e.stopImmediatePropagation();
+        });
+        $('#savescale').click(function(e) {
+            $("#savescale").attr('disabled', 'disabled');
+            if (scalew > 0 || scaleh > 0) {
+
+            } else {
+                $("#savescale").removeAttr('disabled', true);
+                alert("WARNING: You must have to scale to save the image.");
+                return false;
+            }
+            var r = confirm("WARNING: Image will be scaled. Are you sure you want to scale this image?");
+            if (r == true)
+            {
+
+                scaleimage();
+            }
+            else
+            {
+                $("#savescale").removeAttr('disabled', 'disabled');
+            }
+
+            e.stopImmediatePropagation();
+        });
+
+        //other scripts
+
+        $('.edit_img').click(function(e) {
+            console.log('ali');
+            $('#x').val('');
+            $('#y').val('');
+            $('#w').val('');
+            $('#h').val('');
+            $("#savecrop").removeAttr('disabled', 'disabled');
+            _thisfileName = $(this).attr('cropped_image');
+            _icropimgkey = $(this).attr('imgkey');
+            $("#cuimagekey").val(_icropimgkey);
+            $('.display_avatar').attr('src', tempImagePath + _thisfileName);
+            $.colorbox({
+                inline: true,
+                href: "#inline_content",
+                height: "auto",
+                width: "auto",
+                onComplete: function() {
+                    uimagekey = _thisfileName;
+                    $('.display_avatar').Jcrop({
+                        bgColor: 'black',
+                        bgOpacity: .4,
+                        setSelect: [100, 100, 50, 50],
+                        onSelect: updateCoords
+                    }, function() {
+
+                        jcrop_api = this;
+                    });
+                },
+                onClosed: function() {
+                    jcrop_api.destroy();
+                }
+            });
+            e.stopImmediatePropagation();
+        });
+        $('.scale_img').click(function(e) {
+
+            //$( ".display_avatar_scale" ).resizable( "destroy" );
+            //$('.display_avatar_scale').attr( "style", "" );
+            //$('.ui-wrapper').attr( "style", "" );
+            //$('.ui-wrapper').css( "width", orw);
+            //$('.ui-wrapper').css( "height", orh );
+
+            scalew = 0;
+            scaleh = 0;
+            _thisfileName = $(this).attr('img_name');
+            _icropimgkey = $(this).attr('imgkey');
+            $("#cuimagekey").val(_icropimgkey);
+            $('.display_avatar_scale').attr('src', tempImagePath + _thisfileName);
+            $.colorbox({
+                inline: true,
+                href: "#inline_scale_content",
+                onComplete: function() {
+
+                    $(".display_avatar_scale").resizable({stop: function(event, ui) {
+                            //console.log(ui.size.width);
+                            scalew = ui.size.width;
+                            scaleh = ui.size.height;
+                            orw = ui.originalSize.width;
+                            orh = ui.originalSize.height;
+                        }}
+
+                    );
+                },
+                onClosed: function() {
+                    scalew = 0;
+                    scaleh = 0;
+                    location.reload();
+                    //$( ".display_avatar_scale" ).resizable( "destroy" );
+                }
+            });
+            e.stopImmediatePropagation();
+        });
+    },
+    registerStep1Events: function() {
+
+        $('.make_bg').click(function(e) {
+
+            imgkey = $(this).attr('imgkey');
+            var r = confirm("WARNING: Image will be used as background image. Are you agree?");
+            if (r == true)
+            {
+
+                make_background();
+            }
+            else
+            {
+
+            }
+
+            e.stopImmediatePropagation();
+        });
+        $('.delete_img').click(function(e) {
+
+            imgkey = $(this).attr('imgkey');
+            var r = confirm("WARNING: Image will be deleted. Are you sure you want to delete this image?");
+            if (r == true)
+            {
+
+                deleteimages();
+            }
+            else
+            {
+
+            }
+
+            e.stopImmediatePropagation();
+        });
+        $('#savecrop').click(function(e) {
+            $("#savecrop").attr('disabled', 'disabled');
+            g_x = $('#x').val();
+            g_y = $('#y').val();
+            g_w = $('#w').val();
+            g_h = $('#h').val();
+            if (g_x > 0 || g_y > 0 || g_w > 0 || g_h > 0) {
+
+            } else {
+                $("#savecrop").removeAttr('disabled', true);
+                alert("WARNING: You must have to crop to save the image.");
+                return false;
+            }
+            var r = confirm("WARNING: Image will be cropped. Are you sure you want to crop this image?");
+            if (r == true)
+            {
+
+                cropimage();
+            }
+            else
+            {
+                $("#savecrop").removeAttr('disabled', 'disabled');
+            }
+
+            e.stopImmediatePropagation();
+        });
+        $('#savescale').click(function(e) {
+            $("#savescale").attr('disabled', 'disabled');
+            if (scalew > 0 || scaleh > 0) {
+
+            } else {
+                $("#savescale").removeAttr('disabled', true);
+                alert("WARNING: You must have to scale to save the image.");
+                return false;
+            }
+            var r = confirm("WARNING: Image will be scaled. Are you sure you want to scale this image?");
+            if (r == true)
+            {
+
+                scaleimage();
+            }
+            else
+            {
+                $("#savescale").removeAttr('disabled', 'disabled');
+            }
+
+            e.stopImmediatePropagation();
+        });
+
+        //other evetns
+
+        $('.edit_img').click(function(e) {
+            $('#x').val('');
+            $('#y').val('');
+            $('#w').val('');
+            $('#h').val('');
+            $("#savecrop").removeAttr('disabled', 'disabled');
+            _thisfileName = $(this).attr('img_name');
+            _icropimgkey = $(this).attr('imgkey');
+            $("#cuimagekey").val(_icropimgkey);
+            $('.display_avatar').attr('src', tempImagePath + _thisfileName);
+            $.colorbox({
+                inline: true,
+                href: "#inline_content",
+                onComplete: function() {
+                    uimagekey = _thisfileName;
+                    $('.display_avatar').Jcrop({
+                        bgColor: 'black',
+                        bgOpacity: .4,
+                        setSelect: [100, 100, 50, 50],
+                        onSelect: updateCoords
+                    }, function() {
+
+                        jcrop_api = this;
+                    });
+                },
+                onClosed: function() {
+                    jcrop_api.destroy();
+                }
+            });
+            e.stopImmediatePropagation();
+        });
+        $('.scale_img').click(function(e) {
+
+            //$( ".display_avatar_scale" ).resizable( "destroy" );
+            //$('.display_avatar_scale').attr( "style", "" );
+            //$('.ui-wrapper').attr( "style", "" );
+            //$('.ui-wrapper').css( "width", orw);
+            //$('.ui-wrapper').css( "height", orh );
+
+            scalew = 0;
+            scaleh = 0;
+            _thisfileName = $(this).attr('img_name');
+            _icropimgkey = $(this).attr('imgkey');
+            $("#cuimagekey").val(_icropimgkey);
+            $('.display_avatar_scale').attr('src', tempImagePath + _thisfileName);
+            $.colorbox({
+                inline: true,
+                href: "#inline_scale_content",
+                onComplete: function() {
+
+                    $(".display_avatar_scale").resizable({stop: function(event, ui) {
+                            //console.log(ui.size.width);
+                            scalew = ui.size.width;
+                            scaleh = ui.size.height;
+                            orw = ui.originalSize.width;
+                            orh = ui.originalSize.height;
+                        }}
+
+                    );
+                },
+                onClosed: function() {
+                    scalew = 0;
+                    scaleh = 0;
+                    location.reload();
+                    //$( ".display_avatar_scale" ).resizable( "destroy" );
+                }
+            });
+            e.stopImmediatePropagation();
+        });
     }
+
+    //
+
+
 
 }
 

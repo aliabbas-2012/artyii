@@ -49,6 +49,7 @@
 
     var scalew = 0;
     var scaleh = 0;
+    var image_id = 0;
     var background_upload = 1;
     var tempImagePath = '<?php echo Yii::app()->request->baseUrl; ?>/collage/';
     var newimage = '';
@@ -131,14 +132,15 @@
             $.colorbox.close();
         });
     }
-
+image_id
     function scaleimage() {
         var cuimagekey = $('#cuimagekey').val();
-        $.post('<?php echo Yii::app()->request->baseUrl; ?>' + '/site/scaleimg', {
+        $.post('<?php echo $this->createUrl("/upload/updateResize"); ?>', {
             imgkey: cuimagekey,
+            id: image_id,
             ukey: ukey,
-            scalew: scalew,
-            scaleh: scaleh
+            width: scalew,
+            height: scaleh
         }, function(data) {
 
             if (data) {
@@ -147,6 +149,8 @@
             $("#savescale").removeAttr('disabled', true);
             newimage = '';
             $.colorbox.close();
+            alert("Image has been resized ,to see effect refreshing window");
+            document.location.reload();
         });
     }
     $(function() {
@@ -251,6 +255,8 @@
             $("#savecrop").removeAttr('disabled', 'disabled');
             _thisfileName = $(this).attr('img_name');
             _icropimgkey = $(this).attr('imgkey');
+            image_id = $(this).attr('c-id');
+            
             $("#cuimagekey").val(_icropimgkey);
             $('.display_avatar').attr('src', tempImagePath + _thisfileName);
             $.colorbox({
@@ -283,13 +289,20 @@
             //$('.ui-wrapper').attr( "style", "" );
             //$('.ui-wrapper').css( "width", orw);
             //$('.ui-wrapper').css( "height", orh );
+            
+            c_width = $(this).attr("c-width");
+            c_height = $(this).attr("c-height");
+            
+            $('.display_avatar_scale').css("height",c_height);
+            $('.display_avatar_scale').css("width",c_width);
 
             scalew = 0;
             scaleh = 0;
+            image_id = $(this).attr('c-id');
             _thisfileName = $(this).attr('img_name');
             _icropimgkey = $(this).attr('imgkey');
             $("#cuimagekey").val(_icropimgkey);
-            $('.display_avatar_scale').attr('src', tempImagePath + _thisfileName);
+            $('.display_avatar_scale img').attr('src', tempImagePath + _thisfileName);
             $.colorbox({
                 height: "auto",
                 width: "auto",
@@ -509,11 +522,16 @@
                                                 </div>
                                                 <div style="border: 5px solid #fff;padding:10px;">
                                                     <img background="no" class="edit_img" cropped_image="<?php echo $imgmodel[$i]->cropped_img; ?>" img_name="<?php echo $thumb_image; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="cursor:pointer; width: 192px;height: 200px;" src="<?php echo BASE_URL; ?>/collage/<?php echo $thumb_image; ?>" alt="alt" />
-
-
                                                     <br>
-                                                    <a id="scale_<?php echo $imgmodel[$i]->id ?>" class="scale_img" img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="color:red;" href="javascript://">Scale |</a>
-                                                    <a id="crop_<?php echo $imgmodel[$i]->id ?>" class="edit_img" cropped_image="<?php echo $imgmodel[$i]->cropped_img; ?>" img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="color:red;" href="javascript://"> Crop</a>
+                                                    <a id="scale_<?php echo $imgmodel[$i]->id ?>" class="scale_img" 
+                                                       img_name="<?php echo $imgmodel[$i]->main_img; ?>" 
+                                                       imgkey="<?php echo $imgmodel[$i]->img_key; ?>" 
+                                                       c-width ="<?php echo $imgmodel[$i]->width; ?>"
+                                                       c-height ="<?php echo $imgmodel[$i]->height; ?>"
+                                                       c-id ="<?php echo $imgmodel[$i]->id; ?>"
+                                                       style="color:red;" href="javascript://">Scale |</a>
+                                                    <a  c-id ="<?php echo $imgmodel[$i]->id; ?>" 
+                                                        id="crop_<?php echo $imgmodel[$i]->id ?>" class="edit_img" cropped_image="<?php echo $imgmodel[$i]->cropped_img; ?>" img_name="<?php echo $imgmodel[$i]->main_img; ?>" imgkey="<?php echo $imgmodel[$i]->img_key; ?>" style="color:red;" href="javascript://"> Crop</a>
 
 
                                                 </div>
@@ -693,28 +711,38 @@
     <div style='display:none'>
         <div id='inline_scale_content' style='padding:10px; background:#fff;'>
 
-            <p class="image_popup">
-                <img class="display_avatar_scale"  alt="images" src="" alt="no img choosen">
-            <div style="text-align: center;margin-top:20px;">
-                <input type="hidden" id="x" name="x" />
-                <input type="hidden" id="y" name="y" />
-                <input type="hidden" id="w" name="w" />
-                <input type="hidden" id="h" name="h" />
-                <input type="hidden" id="cuimagekey" name="cuimagekey" value="" />
-                <button style="cursor:pointer;" class="btn btn-success" id="savescale" type="button">Save</button>
-            </div>
-            </p>
+            <div class="image_popup">
+                <div class="display_avatar_scale">
+                    <img 
+                        class=""  
+                        alt="images" src="" alt="no img choosen" />
+                </div>
 
+                <div style="text-align: center;margin-top:20px;">
+                    <input type="hidden" id="x" name="x" />
+                    <input type="hidden" id="y" name="y" />
+                    <input type="hidden" id="w" name="w" />
+                    <input type="hidden" id="h" name="h" />
+                    <input type="hidden" id="cuimagekey" name="cuimagekey" value="" />
+                    <button style="cursor:pointer;" class="btn btn-success" 
+                            id="savescale" type="button">Save</button>
+                </div>
+
+
+            </div>
         </div>
-    </div>
-    <style>
-        #lighttable{
-            max-width:100% !important;
-            max-height:100% !important;
-            width: 1024px;
-            background-size: cover;
-            background-repeat: no-repeat !important;
-            display:block;
-        }
-    </style>
+        <style>
+            #lighttable{
+                max-width:100% !important;
+                max-height:100% !important;
+                width: 1024px;
+                background-size: cover;
+                background-repeat: no-repeat !important;
+                display:block;
+            }
+            .display_avatar_scale img {
+                width:100%;
+                height:100%;
+            }
+        </style>
 
